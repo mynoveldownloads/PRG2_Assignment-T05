@@ -7,7 +7,7 @@ using PRG2_T05_Flight;
 
 namespace PRG2_T05_DDJBFlight
 {
-    public class DDJBFligt : Flight
+    public class DDJBFlight : Flight
     {
         public double RequestFee { get; set; }
 
