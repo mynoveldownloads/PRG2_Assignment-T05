@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PRG2_T05_Flight;
 
-namespace PRG2_T05_DDJBFligt
+namespace PRG2_T05_DDJBFlight
 {
     public class DDJBFligt : Flight
     {
