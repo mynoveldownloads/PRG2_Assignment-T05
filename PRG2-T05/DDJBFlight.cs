@@ -5,13 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using PRG2_T05_Flight;
 
-namespace PRG2_T05_DDJBFligt
+namespace PRG2_T05_DDJBFlight
 {
-    public class DDJBFligt : Flight
+    public class DDJBFlight : Flight
     {
         public double RequestFee { get; set; }
 
-        public DDJBFligt(string flight_no, string origin, string destination, DateTime expected_time, string status, double request_fee) : base(flight_no, origin, destination, expected_time, status)
+        public DDJBFlight(string flight_no, string origin, string destination, DateTime expected_time, string status, double request_fee) : base(flight_no, origin, destination, expected_time, status)
         {
             RequestFee = request_fee;
         }
