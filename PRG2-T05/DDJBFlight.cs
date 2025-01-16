@@ -11,7 +11,7 @@ namespace PRG2_T05_DDJBFlight
     {
         public double RequestFee { get; set; }
 
-        public DDJBFligt(string flight_no, string origin, string destination, DateTime expected_time, string status, double request_fee) : base(flight_no, origin, destination, expected_time, status)
+        public DDJBFlight(string flight_no, string origin, string destination, DateTime expected_time, string status, double request_fee) : base(flight_no, origin, destination, expected_time, status)
         {
             RequestFee = request_fee;
         }
