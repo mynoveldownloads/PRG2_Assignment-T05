@@ -9,7 +9,7 @@ namespace PRG2_T05_LWTTFlight
 {
     public class LWTTFlight : Flight
     {
-        public double RequestFee { get; set; }
+        public double RequestFee { get; set; } = 500;
 
         public LWTTFlight(string flight_no, string origin, string destination, DateTime expected_time, string status, double request_fee) : base(flight_no, origin, destination, expected_time, status)
         {
@@ -23,7 +23,7 @@ namespace PRG2_T05_LWTTFlight
 
         public override double CalculateFees()
         {
-            return 0;
+            return 300+RequestFee;
         }
     }
 }
