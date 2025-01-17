@@ -10,7 +10,7 @@ namespace PRG2_T05_CFFTFlight
 {
     public class CFFTFlight : Flight
     {
-        public double RequestFee {get;set;}
+        public double RequestFee { get; set; } = 150;
 
         public CFFTFlight(string flight_no, string origin, string destination, DateTime expected_time, string status, double request_fee) : base(flight_no, origin, destination, expected_time, status)
         {
@@ -24,7 +24,8 @@ namespace PRG2_T05_CFFTFlight
 
         public override double CalculateFees()
         {
-            return 0;
+            return 300+RequestFee;
         }
     }
 }
+
