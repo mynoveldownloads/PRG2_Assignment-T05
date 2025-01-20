@@ -23,9 +23,9 @@ public class BoardingGate
 
         if (AssignedFlight != null)
         {
-            if (AssignedFlight.SpecialRequestCode == "DDJB") baseFee += 300;
-            if (AssignedFlight.SpecialRequestCode == "CFFT") baseFee += 150;
-            if (AssignedFlight.SpecialRequestCode == "LWTT") baseFee += 500;
+            if (SupportsDDJB) baseFee += 300;
+            if (SupportsCFFT) baseFee += 150;
+            if (SupportsLWTT) baseFee += 500;
         }
 
         return baseFee;
