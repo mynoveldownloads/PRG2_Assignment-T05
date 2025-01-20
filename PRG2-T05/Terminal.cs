@@ -1,7 +1,13 @@
+
 ﻿/// <summary>
 /// Represents a terminal in an airport, which manages airlines and boarding gates.
 /// Provides functionality to add airlines, assign boarding gates, and calculate airline fees.
 /// </summary>
+
+﻿// Terminal.cs
+using PRG2_T05_Flight;
+
+
 public class Terminal
 {
     public string TerminalName { get; set; }
@@ -13,11 +19,13 @@ public class Terminal
         TerminalName = terminalName;
     }
 
+
     /// <summary>
     /// Adds an airline to the terminal.
     /// </summary>
     /// <param name="airline">The airline to add.</param>
     /// <returns>True if the airline is added successfully, false otherwise.</returns>
+
     public bool AddAirline(Airline airline)
     {
         if (!Airlines.ContainsKey(airline.Code))
@@ -28,11 +36,14 @@ public class Terminal
         return false;
     }
 
+
    
     /// Adds a boarding gate to the terminal if it doesn't already exist.
    
   
     /// <returns>True if the boarding gate is added successfully, false otherwise.
+
+
     public bool AddBoardingGate(BoardingGate gate)
     {
         if (!BoardingGates.ContainsKey(gate.GateName))
@@ -42,6 +53,7 @@ public class Terminal
         }
         return false;
     }
+
 
     /// <summary>
     /// Assigns a flight to a specific boarding gate.
@@ -75,6 +87,8 @@ public class Terminal
     /// </summary>
     /// <param name="flight">The flight to find the airline for.</param>
     /// <returns>The airline associated with the flight, or null if not found.</returns>
+
+
     public Airline GetAirlineFromFlight(Flight flight)
     {
         foreach (var airline in Airlines.Values)
@@ -87,6 +101,7 @@ public class Terminal
         return null;
     }
 
+
     /// <summary>
     /// Prints the calculated fees for all airlines in the terminal.
     /// </summary>
@@ -94,10 +109,15 @@ public class Terminal
     {
         Console.WriteLine($"--- Fees Summary for Terminal {TerminalName} ---");
 
+
+    public void PrintAirlineFees()
+    {
+
         foreach (var airline in Airlines.Values)
         {
             Console.WriteLine($"{airline.Name} Fees: ${airline.CalculateFees():F2}");
         }
+
 
         double gateFees = CalculateTotalGateFees();
         Console.WriteLine($"Total Gate Fees: ${gateFees:F2}");
@@ -119,6 +139,7 @@ public class Terminal
             }
         }
         return totalFees;
+
     }
 
     public override string ToString()
