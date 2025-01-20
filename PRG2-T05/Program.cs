@@ -47,9 +47,9 @@ namespace PRG2_T05_Flight
                         var data = line.Split(',');
                         if (data.Length >= 2)
                         {
-                            string airlineCode = data[0].Trim();
-                            string airlineName = data[1].Trim();
-                            Airline airline = new Airline(airlineCode, airlineName);
+                            string airlineName = data[0].Trim();                            
+                            string airlineCode = data[1].Trim();
+                            Airline airline = new Airline(name: airlineName, code: airlineCode);
                             airline_dict[airlineCode] = airline; // rphl edit: added every airline object to airline dict
                                                                  // airline_dict in main method is updated
                             //Console.WriteLine($"Loaded Airline: {airlineCode} - {airlineName}");
@@ -151,7 +151,7 @@ namespace PRG2_T05_Flight
                     flight_dict[flight_no] = new_flight;
                 }
             }
-            Console.WriteLine("flights.csv has been initialised\n");
+            Console.WriteLine("Flights loaded successfully.\n");
         }
 
         static string GetStatus(string special_request_code)
@@ -163,35 +163,44 @@ namespace PRG2_T05_Flight
             return "None";
         }
 
-        static void ListAllFlights(Dictionary<string, Flight> flight_dict)
+        static void ListAllFlights(Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict)
         {
             Console.WriteLine($"{"Flight Number", -16}{"Airline Name",-23}{"Origin",-23}{"Destination",-23}{"Expected Departure/Arrival Time",-31}");
             foreach (var  flight in flight_dict.Values)
             {
 
-                Console.WriteLine($"{flight.FlightNumber,-16}{GetAirlineName(flight.FlightNumber),-23}{flight.Origin,-23}{flight.Destination,-23}{flight.ExpectedTime,-31}");
+                //Console.WriteLine($"{flight.FlightNumber,-16}{GetAirlineName(flight.FlightNumber),-23}{flight.Origin,-23}{flight.Destination,-23}{flight.ExpectedTime,-31}"); // old code, leave it here
+                Console.WriteLine($"{flight.FlightNumber,-16}{GetAirlineName(airline_dict, flight.FlightNumber),-23}{flight.Origin,-23}{flight.Destination,-23}{flight.ExpectedTime,-31}");
             }
         }
 
-        static string GetAirlineName(string airline_code)
-        {
-            string code = airline_code.Substring(0, 2); // extract the first 2 letters (airline code) to obtain the airline name
+        //static string GetAirlineName(string airline_code) // old code, leaving it here in case needed in future
+        //{
+        //    string code = airline_code.Substring(0, 2); // extract the first 2 letters (airline code) to obtain the airline name
             
-            Dictionary<string, string> airline_name_dict = new Dictionary<string, string>();
+        //    Dictionary<string, string> airline_name_dict = new Dictionary<string, string>();
 
-            // initiate airlines.csv
-            string[] airline_csv = File.ReadAllLines("airlines.csv");
-            for (int i = 1; i < airline_csv.Length; i++)
-            {
-                string[] split_text = airline_csv[i].Split(",");
-                string extracted_name = split_text[0];
-                string extracted_code = split_text[1];
+        //    // initiate airlines.csv
+        //    string[] airline_csv = File.ReadAllLines("airlines.csv");
+        //    for (int i = 1; i < airline_csv.Length; i++)
+        //    {
+        //        string[] split_text = airline_csv[i].Split(",");
+        //        string extracted_name = split_text[0];
+        //        string extracted_code = split_text[1];
 
-                airline_name_dict[extracted_code] = extracted_name;
-            }
-            string airline_name = airline_name_dict[code];
+        //        airline_name_dict[extracted_code] = extracted_name;
+        //    }
+        //    string airline_name = airline_name_dict[code];
 
-            return airline_name;
+        //    return airline_name;
+        //}
+
+        static string GetAirlineName(Dictionary<string, Airline> airline_dict, string airline_code)
+        {
+            string code = airline_code.Substring(0, 2);
+            //Console.WriteLine(code);
+            //return "ha";
+            return airline_dict[code].Name;
         }
 
         static bool IsNegative(double user_input)
@@ -262,7 +271,6 @@ namespace PRG2_T05_Flight
 
         static void DisplayMenu(Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict, Dictionary<string, BoardingGate> boarding_gate_dict)
         {
-            LoadFlightsCSV(flight_dict);
 
             bool exit_command = false;
             while (!exit_command)
@@ -283,7 +291,7 @@ namespace PRG2_T05_Flight
                             break;
 
                         case 1:
-                            ListAllFlights(flight_dict);
+                            ListAllFlights(flight_dict, airline_dict);
                             break;
 
                         case 2:
