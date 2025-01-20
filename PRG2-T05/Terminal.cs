@@ -5,8 +5,6 @@
 /// Represents a terminal in an airport, which manages airlines and boarding gates.
 /// Provides functionality to add airlines, assign boarding gates, and calculate airline fees.
 /// </summary>
-=======
-
 
 /// Represents a terminal in an airport, which manages airlines and boarding gates.
 /// Provides functionality to add airlines, assign boarding gates, and calculate airline fees.
