@@ -1,11 +1,19 @@
 
-﻿/// <summary>
+﻿using PRG2_T05_Flight;
+
+/// <summary>
+/// Represents a terminal in an airport, which manages airlines and boarding gates.
+/// Provides functionality to add airlines, assign boarding gates, and calculate airline fees.
+/// </summary>
+=======
+
+
 /// Represents a terminal in an airport, which manages airlines and boarding gates.
 /// Provides functionality to add airlines, assign boarding gates, and calculate airline fees.
 /// </summary>
 
-﻿// Terminal.cs
 using PRG2_T05_Flight;
+
 
 
 public class Terminal
@@ -37,11 +45,19 @@ public class Terminal
     }
 
 
+    /// <summary>
+    /// Adds a boarding gate to the terminal if it doesn't already exist.
+    /// </summary>
+    /// <param name="gate">The boarding gate to add.</param>
+    /// <returns>True if the boarding gate is added successfully, false otherwise.</returns>
+
+
    
     /// Adds a boarding gate to the terminal if it doesn't already exist.
    
   
     /// <returns>True if the boarding gate is added successfully, false otherwise.
+
 
 
     public bool AddBoardingGate(BoardingGate gate)
@@ -54,17 +70,37 @@ public class Terminal
         return false;
     }
 
+    /// <summary>
+    /// Assigns a flight to a boarding gate.
+    /// </summary>
+    /// <param name="gateName">The gate name.</param>
+=======
 
     /// <summary>
     /// Assigns a flight to a specific boarding gate.
     /// </summary>
     /// <param name="gateName">The name of the gate.</param>
+
     /// <param name="flight">The flight to assign.</param>
     /// <returns>True if the flight is assigned successfully, false otherwise.</returns>
     public bool AssignFlightToGate(string gateName, Flight flight)
     {
         if (BoardingGates.ContainsKey(gateName))
         {
+
+            BoardingGates[gateName].AssignFlight(flight);
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Clears the flight assignment from a boarding gate.
+    /// </summary>
+    /// <param name="gateName">The gate name.</param>
+    /// <returns>True if the flight assignment is cleared successfully, false otherwise.</returns>
+    public bool ClearFlightFromGate(string gateName)
+
             return BoardingGates[gateName].AssignFlight(flight);
         }
         return false; // Gate does not exist
@@ -75,11 +111,18 @@ public class Terminal
     /// </summary>
     /// <param name="gateName">The name of the gate.</param>
     public void ClearFlightFromGate(string gateName)
+
     {
         if (BoardingGates.ContainsKey(gateName))
         {
             BoardingGates[gateName].ClearFlightAssignment();
+
+            return true;
         }
+        return false;
+
+        }
+
     }
 
     /// <summary>
@@ -87,6 +130,8 @@ public class Terminal
     /// </summary>
     /// <param name="flight">The flight to find the airline for.</param>
     /// <returns>The airline associated with the flight, or null if not found.</returns>
+
+
 
 
     public Airline GetAirlineFromFlight(Flight flight)
@@ -100,6 +145,8 @@ public class Terminal
         }
         return null;
     }
+
+
 
 
     /// <summary>
@@ -147,3 +194,4 @@ public class Terminal
         return $"Terminal: {TerminalName}, Airlines: {Airlines.Count}, Gates: {BoardingGates.Count}";
     }
 }
+//test
