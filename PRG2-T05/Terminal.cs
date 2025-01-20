@@ -1,5 +1,10 @@
-
-﻿using PRG2_T05_Flight;
+using System;
+using PRG2_T05_Flight;
+using PRG2_T05_NORMFlight;
+using PRG2_T05_LWTTFlight;
+using PRG2_T05_Flight;
+using PRG2_T05_DDJBFlight;
+using PRG2_T05_CFFTFlight;
 
 /// <summary>
 /// Represents a terminal in an airport, which manages airlines and boarding gates.
@@ -50,10 +55,10 @@ public class Terminal
     /// <returns>True if the boarding gate is added successfully, false otherwise.</returns>
 
 
-   
+
     /// Adds a boarding gate to the terminal if it doesn't already exist.
-   
-  
+
+
     /// <returns>True if the boarding gate is added successfully, false otherwise.
 
 
@@ -71,15 +76,15 @@ public class Terminal
     /// <summary>
     /// Assigns a flight to a boarding gate.
     /// </summary>
-    /// <param name="gateName">The gate name.</param>
-=======
+    // <param name="gateName">The gate name.</param>
+
 
     /// <summary>
     /// Assigns a flight to a specific boarding gate.
     /// </summary>
-    /// <param name="gateName">The name of the gate.</param>
+    // <param name="gateName">The name of the gate.</param>
 
-    /// <param name="flight">The flight to assign.</param>
+    // <param name="flight">The flight to assign.</param>
     /// <returns>True if the flight is assigned successfully, false otherwise.</returns>
     public bool AssignFlightToGate(string gateName, Flight flight)
     {
@@ -95,9 +100,11 @@ public class Terminal
     /// <summary>
     /// Clears the flight assignment from a boarding gate.
     /// </summary>
-    /// <param name="gateName">The gate name.</param>
+    // <param name="gateName">The gate name.</param>
     /// <returns>True if the flight assignment is cleared successfully, false otherwise.</returns>
     public bool ClearFlightFromGate(string gateName)
+    {
+        {
 
             return BoardingGates[gateName].AssignFlight(flight);
         }
@@ -107,9 +114,8 @@ public class Terminal
     /// <summary>
     /// Clears the flight assignment from a specific boarding gate.
     /// </summary>
-    /// <param name="gateName">The name of the gate.</param>
+    // <param name="gateName">The name of the gate.</param>
     public void ClearFlightFromGate(string gateName)
-
     {
         if (BoardingGates.ContainsKey(gateName))
         {
@@ -119,40 +125,40 @@ public class Terminal
         }
         return false;
 
-        }
-
     }
 
-    /// <summary>
-    /// Retrieves the airline associated with a specific flight.
-    /// </summary>
-    /// <param name="flight">The flight to find the airline for.</param>
-    /// <returns>The airline associated with the flight, or null if not found.</returns>
+}
+
+/// <summary>
+/// Retrieves the airline associated with a specific flight.
+/// </summary>
+// <param name="flight">The flight to find the airline for.</param>
+/// <returns>The airline associated with the flight, or null if not found.</returns>
 
 
 
 
-    public Airline GetAirlineFromFlight(Flight flight)
+public Airline GetAirlineFromFlight(Flight flight)
+{
+    foreach (var airline in Airlines.Values)
     {
-        foreach (var airline in Airlines.Values)
+        if (airline.Flights.ContainsKey(flight.FlightNumber))
         {
-            if (airline.Flights.ContainsKey(flight.FlightNumber))
-            {
-                return airline;
-            }
+            return airline;
         }
-        return null;
     }
+    return null;
+}
 
 
 
 
-    /// <summary>
-    /// Prints the calculated fees for all airlines in the terminal.
-    /// </summary>
-    public void PrintAirlineFees()
-    {
-        Console.WriteLine($"--- Fees Summary for Terminal {TerminalName} ---");
+/// <summary>
+/// Prints the calculated fees for all airlines in the terminal.
+/// </summary>
+public void PrintAirlineFees()
+{
+    Console.WriteLine($"--- Fees Summary for Terminal {TerminalName} ---");
 
 
     public void PrintAirlineFees()
@@ -188,8 +194,8 @@ public class Terminal
     }
 
     public override string ToString()
-    {
-        return $"Terminal: {TerminalName}, Airlines: {Airlines.Count}, Gates: {BoardingGates.Count}";
-    }
+{
+    return $"Terminal: {TerminalName}, Airlines: {Airlines.Count}, Gates: {BoardingGates.Count}";
+}
 }
 //test
