@@ -7,7 +7,7 @@ public class BoardingGate
     public bool SupportsCFFT { get; set; }
     public bool SupportsDDJB { get; set; }
     public bool SupportsLWTT { get; set; }
-    public Flight AssignedFlight { get; set; }
+    public Flight? AssignedFlight { get; private set; }
 
     public BoardingGate(string gateName, bool supportsCFFT, bool supportsDDJB, bool supportsLWTT)
     {
@@ -17,22 +17,25 @@ public class BoardingGate
         SupportsLWTT = supportsLWTT;
     }
 
-    public double CalculateFees()
+    /// <summary>
+    /// Assigns a flight to this boarding gate.
+    /// </summary>
+    /// <param name="flight">The flight to assign.</param>
+    public void AssignFlight(Flight flight)
     {
-        double baseFee = 300;
+        AssignedFlight = flight;
+    }
 
-        if (AssignedFlight != null)
-        {
-            if (SupportsDDJB) baseFee += 300;
-            if (SupportsCFFT) baseFee += 150;
-            if (SupportsLWTT) baseFee += 500;
-        }
-
-        return baseFee;
+    /// <summary>
+    /// Clears the flight assignment from this boarding gate.
+    /// </summary>
+    public void ClearFlightAssignment()
+    {
+        AssignedFlight = null;
     }
 
     public override string ToString()
     {
-        return $"Gate: {GateName}, Supports Special Requests: CFFT({SupportsCFFT}), DDJB({SupportsDDJB}), LWTT({SupportsLWTT})";
+        return $"Gate: {GateName}, Supports: CFFT({SupportsCFFT}), DDJB({SupportsDDJB}), LWTT({SupportsLWTT}), Assigned Flight: {AssignedFlight?.FlightNumber ?? "None"}";
     }
 }
