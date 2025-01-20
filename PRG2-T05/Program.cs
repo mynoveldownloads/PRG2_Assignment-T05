@@ -1,26 +1,41 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using PRG2_T05_CFFTFlight;
+using PRG2_T05_DDJBFlight;
+using PRG2_T05_Flight;
+using PRG2_T05_LWTTFlight;
+using PRG2_T05_NORMFlight;
+
+
 namespace PRG2_T05_Flight
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            Dictionary<string, Flight> flight_dict = new Dictionary<string, Flight>();
-            DisplayMenu(flight_dict);
 
-            Dictionary<string, Flight> flight_list = new Dictionary<string, Flight>();
-            LoadAirlinesCSV();
-            LoadBoardingGatesCSV();
-            LoadFlightsCSV();
+            // do not tamper
+            Dictionary<string, Flight> flight_dict = new Dictionary<string, Flight>();
+            Dictionary<string, Airline> airline_dict = new Dictionary<string, Airline>();
+            Dictionary<string, BoardingGate> boarding_gate_dict = new Dictionary<string, BoardingGate>();
+            LoadAirlinesCSV(airline_dict);
+            LoadBoardingGatesCSV(boarding_gate_dict);
+            LoadFlightsCSV(flight_dict);
+            DisplayMenu(flight_dict, airline_dict, boarding_gate_dict);
+
+            //Dictionary<string, Flight> flight_list = new Dictionary<string, Flight>();
+            
         }
 
         /// <summary>
         /// Loads airlines from a CSV file and adds them to a dictionary.
         /// This is Feature 1: Loading Airlines
         /// </summary>
-        static void LoadAirlinesCSV()
+        /// 
+
+        // rphl edit: added airline dict as argument and add airline to dict
+        static void LoadAirlinesCSV(Dictionary<string, Airline> airline_dict)
         {
             try
             {
@@ -35,7 +50,9 @@ namespace PRG2_T05_Flight
                             string airlineCode = data[0].Trim();
                             string airlineName = data[1].Trim();
                             Airline airline = new Airline(airlineCode, airlineName);
-                            Console.WriteLine($"Loaded Airline: {airlineCode} - {airlineName}");
+                            airline_dict[airlineCode] = airline; // rphl edit: added every airline object to airline dict
+                                                                 // airline_dict in main method is updated
+                            //Console.WriteLine($"Loaded Airline: {airlineCode} - {airlineName}");
                         }
                     }
                 }
@@ -52,7 +69,10 @@ namespace PRG2_T05_Flight
         /// Loads boarding gates from a CSV file and adds them to a dictionary.
         /// This is Feature 1: Loading Boarding Gates
         /// </summary>
-        static void LoadBoardingGatesCSV()
+        /// 
+
+        // rphl edit: added boarding_gate_dict as argument
+        static void LoadBoardingGatesCSV(Dictionary<string, BoardingGate> boarding_gate_dict)
         {
             try
             {
@@ -70,7 +90,9 @@ namespace PRG2_T05_Flight
                             bool supportsLWTT = data[3].Trim().Equals("true", StringComparison.OrdinalIgnoreCase);
 
                             BoardingGate gate = new BoardingGate(gateName, supportsCFFT, supportsDDJB, supportsLWTT);
-                            Console.WriteLine($"Loaded Boarding Gate: {gateName} (CFFT: {supportsCFFT}, DDJB: {supportsDDJB}, LWTT: {supportsLWTT})");
+
+                            boarding_gate_dict[gateName] = gate; // rphl edit: added every boardinggate object to boarding gate dict
+                            //Console.WriteLine($"Loaded Boarding Gate: {gateName} (CFFT: {supportsCFFT}, DDJB: {supportsDDJB}, LWTT: {supportsLWTT})");
                         }
                     }
                 }
@@ -87,9 +109,6 @@ namespace PRG2_T05_Flight
         /// Loads flights from a CSV file and adds them to a dictionary.
         /// This is Feature 2: Loading Flights
         /// </summary>
-        static void LoadFlightsCSV()
-
-        }
 
         static void LoadFlightsCSV (Dictionary<string, Flight> flight_dict)
 
@@ -241,7 +260,7 @@ namespace PRG2_T05_Flight
             }
         }
 
-        static void DisplayMenu(Dictionary<string, Flight> flight_dict)
+        static void DisplayMenu(Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict, Dictionary<string, BoardingGate> boarding_gate_dict)
         {
             LoadFlightsCSV(flight_dict);
 
