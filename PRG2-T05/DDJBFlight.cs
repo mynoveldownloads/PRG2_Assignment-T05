@@ -23,7 +23,8 @@ namespace PRG2_T05_DDJBFlight
 
         public override double CalculateFees()
         {
-            return 300+RequestFee;
+            RequestFee += 300;
+            return RequestFee;
         }
     }
 }
