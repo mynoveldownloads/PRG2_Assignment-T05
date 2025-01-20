@@ -1,5 +1,8 @@
 ﻿// Airline.cs
 using PRG2_T05_Flight;
+using System;
+using System.Collections.Generic;
+
 public class Airline
 {
     public string Name { get; set; }
