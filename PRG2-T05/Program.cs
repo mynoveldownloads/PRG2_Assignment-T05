@@ -24,6 +24,8 @@ namespace PRG2_T05_Flight
             LoadFlightsCSV(flight_dict);
             DisplayMenu(flight_dict, airline_dict, boarding_gate_dict);
 
+            //Dictionary<string, Flight> flight_list = new Dictionary<string, Flight>();
+            
         }
 
         /// <summary>
@@ -45,14 +47,12 @@ namespace PRG2_T05_Flight
                         var data = line.Split(',');
                         if (data.Length >= 2)
                         {
-
                             string airlineName = data[0].Trim();                            
                             string airlineCode = data[1].Trim();
                             Airline airline = new Airline(name: airlineName, code: airlineCode);
                             airline_dict[airlineCode] = airline; // rphl edit: added every airline object to airline dict
                                                                  // airline_dict in main method is updated
                             //Console.WriteLine($"Loaded Airline: {airlineCode} - {airlineName}");
-
                         }
                     }
                 }
@@ -104,7 +104,6 @@ namespace PRG2_T05_Flight
                 Console.WriteLine($"Error loading boarding gates: {ex.Message}");
             }
         }
-
 
         /// <summary>
         /// Loads flights from a CSV file and adds them to a dictionary.
@@ -279,10 +278,7 @@ namespace PRG2_T05_Flight
                 try
                 {
                     // leave it as it is, copy-pasted from sample output
-                    Console.WriteLine("=============================================" +
-                                      "\r\nWelcome to Changi Airport Terminal 5\r\n" +
-                                      "=============================================" +
-                                      "\r\n1. List All Airlines\r\n2. List Boarding Gates\r\n0. Exit");
+                    Console.WriteLine("=============================================\r\nWelcome to Changi Airport Terminal 5\r\n=============================================\r\n1. List All Flights\r\n2. List Boarding Gates\r\n3. Assign a Boarding Gate to a Flight\r\n4. Create Flight\r\n5. Display Airline Flights\r\n6. Modify Flight Details\r\n7. Display Flight Schedule\r\n0. Exit");
 
                     Console.WriteLine("Please select your option:");
                     int choice = int.Parse(Console.ReadLine());
@@ -295,13 +291,31 @@ namespace PRG2_T05_Flight
                             break;
 
                         case 1:
-
                             ListAllFlights(flight_dict, airline_dict);
-
                             break;
 
                         case 2:
-                            ListAllBoardingGates(boarding_gate_dict);
+
+                            break;
+
+                        case 3:
+
+                            break;
+
+                        case 4:
+
+                            break;
+
+                        case 5:
+
+                            break;
+
+                        case 6:
+
+                            break;
+
+                        case 7:
+
                             break;
 
                         default:
@@ -314,31 +328,13 @@ namespace PRG2_T05_Flight
                 {
                     Console.WriteLine("Please enter an appropriate number!");
                 }
-
+                
             }
         }
-
-        static void ListAllAirlines(Dictionary<string, Airline> airline_dict)
-        {
-            Console.WriteLine($"{"Airline Code",-15}{"Airline Name",-30}");
-            foreach (var airline in airline_dict.Values)
-            {
-                Console.WriteLine($"{airline.Code,-15}{airline.Name,-30}");
-            }
-        }
-
-        static void ListAllBoardingGates(Dictionary<string, BoardingGate> boarding_gate_dict)
-        {
-            Console.WriteLine($"{"Gate Name",-15}{"Supports CFFT",-15}{"Supports DDJB",-15}{"Supports LWTT",-15}");
-            foreach (var gate in boarding_gate_dict.Values)
-            {
-                Console.WriteLine($"{gate.gateName,-15}{gate.SupportsCFFT,-15}{gate.SupportsDDJB,-15}{gate.SupportsLWTT,-15}");
-            }
-        }
-
     }
-
 }
+
+
 
 /*
  * 
@@ -346,17 +342,21 @@ namespace PRG2_T05_Flight
  * 
  * display menu (partially done, merge conflict error with terminal.cs)
  * 
- * feature 1: load csv file (airline and boardinggates) DONE
- * feature 2: load csv file (flights) SKIPPED
- * feature 3: display flights information SKIPPED
- * feature 4: display boarding gates information SKIPPED
+ * feature 1: load csv file (airline and boardinggates)
+ * feature 2: load csv file (flights) DONE
+ * feature 3: display flights informaion DONE
+ * feature 4: display boarding gates information
  * feature 5: assign boarding gate to a flight (SKIP FOR NOW)
- * feature 6: create new flight SKIPPED
- * feature 7: display full flight details from an airline SKIPPED
- * feature 8: modify flight details SKIPPED
- * feature 9: display scheduled flights (sorted in order -> IComparable) with boarding gates assignments SKIPPED
+ * feature 6: create new flight DONE
+ * feature 7: display full flight details from an airline
+ * feature 8: modify flight details
+ * feature 9: display scheduled flights (sorted in order -> IComparable) with boarding gates assignments
  * 
  * Raphael: 2,3,5,6,9
  * Yeaw Min: 1,4,7,8
  * 
  */
+
+// LWTT -> Delay
+// DDJB -> On Time
+// CFFT -> Boarding
