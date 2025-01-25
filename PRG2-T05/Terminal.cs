@@ -54,14 +54,16 @@ public class Terminal
     /// <returns>The airline associated with the flight, or null if not found.</returns>
     public Airline GetAirlineFromFlight(Flight flight)
     {
-        foreach (var airline in Airlines.Values)
+        string code = flight.FlightNumber.Substring(0, 2); // flight number e.g. SQ 115, airline code is SQ -> extract the first 2 letters in flight number
+        if (flight == null || !airlines.ContainsKey(code)) // if flight is null or dictionary does not contain the key, return nothing
         {
-            if (airline.Flights.ContainsKey(flight.FlightNumber))
-            {
-                return airline;
-            }
+            return null;
         }
-        return null;
+        else
+        {
+            Airline airline = airlines[code];
+            return airline;
+        }
     }
 
     /// <summary>
