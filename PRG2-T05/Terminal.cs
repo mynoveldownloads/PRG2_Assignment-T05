@@ -46,36 +46,6 @@ public class Terminal
         return false;
     }
 
-        /// <summary>
-        /// Assigns a flight to a boarding gate.
-        /// </summary>
-        /// The gate name
-        /// The flight to assign
-        /// <returns>True if the flight is assigned successfully, false otherwise.</returns>
-    public bool AssignFlightToGate(string gateName, Flight flight)
-    {
-        if (BoardingGates.ContainsKey(gateName))
-        {
-            BoardingGates[gateName].AssignFlight(flight);
-            return true;
-        }
-        return false;
-    }
-
-    /// <summary>
-    /// Clears the flight assignment from a boarding gate.
-    /// </summary>
-    /// <param name="gateName">The gate name.</param>
-    /// <returns>True if the flight assignment is cleared successfully, false otherwise.</returns>
-    public bool ClearFlightFromGate(string gateName)
-    {
-        if (BoardingGates.ContainsKey(gateName))
-        {
-            BoardingGates[gateName].ClearFlightAssignment();
-            return true;
-        }
-        return false;
-    }
 
     /// <summary>
     /// Retrieves the airline associated with a specific flight.
@@ -84,14 +54,16 @@ public class Terminal
     /// <returns>The airline associated with the flight, or null if not found.</returns>
     public Airline GetAirlineFromFlight(Flight flight)
     {
-        foreach (var airline in Airlines.Values)
+        string code = flight.FlightNumber.Substring(0, 2); // flight number e.g. SQ 115, airline code is SQ -> extract the first 2 letters in flight number
+        if (flight == null || !Airlines.ContainsKey(code)) // if flight is null or dictionary does not contain the key, return nothing
         {
-            if (airline.Flights.ContainsKey(flight.FlightNumber))
-            {
-                return airline;
-            }
+            return null;
         }
-        return null;
+        else
+        {
+            Airline airline = Airlines[code];
+            return airline;
+        }
     }
 
     /// <summary>

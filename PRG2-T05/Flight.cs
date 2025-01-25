@@ -8,13 +8,13 @@ namespace PRG2_T05_Flight
 {
     public abstract class Flight
     {
-        public string FlightNumber {  get; set; }
+        public string FlightNumber { get; set; }
         public string Origin { get; set; }
         public string Destination { get; set; }
         public DateTime ExpectedTime { get; set; }
         public string Status { get; set; }
 
-        public Flight (string flight_no, string origin, string destination, DateTime expected_time, string status)
+        public Flight(string flight_no, string origin, string destination, DateTime expected_time, string status)
         {
             FlightNumber = flight_no;
             Origin = origin;
@@ -30,4 +30,4 @@ namespace PRG2_T05_Flight
 
         public abstract double CalculateFees();
     }
-}
+}   

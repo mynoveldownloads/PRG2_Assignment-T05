@@ -20,7 +20,7 @@ namespace PRG2_T05_LWTTFlight
         // overloaded constructor without request_fee
         public LWTTFlight(string flight_no, string origin, string destination, DateTime expected_time, string status) : base(flight_no, origin, destination, expected_time, status)
         {
-            
+
         }
 
         public override string ToString()
