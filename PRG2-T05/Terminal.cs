@@ -19,7 +19,7 @@ public class Terminal
     /// <summary>
     /// Adds an airline to the terminal.
     /// </summary>
-    /// <param name="airline">The airline to add.</param>
+    /// The airline to add
     /// <returns>True if the airline is added successfully, false otherwise.</returns>
     public bool AddAirline(Airline airline)
     {
@@ -34,7 +34,7 @@ public class Terminal
     /// <summary>
     /// Adds a boarding gate to the terminal if it doesn't already exist.
     /// </summary>
-    /// <param name="gate">The boarding gate to add.</param>
+    /// The boarding gate to add.</param>
     /// <returns>True if the boarding gate is added successfully, false otherwise.</returns>
     public bool AddBoardingGate(BoardingGate gate)
     {
@@ -49,8 +49,8 @@ public class Terminal
         /// <summary>
         /// Assigns a flight to a boarding gate.
         /// </summary>
-        /// <param name="gateName">The gate name.</param>
-        /// <param name="flight">The flight to assign.</param>
+        /// The gate name
+        /// The flight to assign
         /// <returns>True if the flight is assigned successfully, false otherwise.</returns>
     public bool AssignFlightToGate(string gateName, Flight flight)
     {
