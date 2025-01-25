@@ -1,41 +1,34 @@
-﻿// BoardingGate.cs
-using PRG2_T05_Flight;
+﻿using PRG2_T05_Flight;
 
 public class BoardingGate
 {
-    public string gateName { get; set; }
-    public bool SupportsCFFT { get; set; }
-    public bool SupportsDDJB { get; set; }
-    public bool SupportsLWTT { get; set; }
+    // Fixed property names to PascalCase
+    public string GateName { get; init; }
+    public bool SupportsCFFT { get; init; }
+    public bool SupportsDDJB { get; init; }
+    public bool SupportsLWTT { get; init; }
     public Flight? AssignedFlight { get; private set; }
 
-    public BoardingGate(string GateName, bool supportsCFFT, bool supportsDDJB, bool supportsLWTT)
+    public BoardingGate(string gateName, bool supportsCFFT, bool supportsDDJB, bool supportsLWTT)
     {
-        gateName = GateName;
+        GateName = gateName;
         SupportsCFFT = supportsCFFT;
         SupportsDDJB = supportsDDJB;
         SupportsLWTT = supportsLWTT;
     }
 
-    /// <summary>
-    /// Assigns a flight to this boarding gate.
-    /// </summary>
-    /// <param name="flight">The flight to assign.</param>
-    public void AssignFlight(Flight flight)
+    public bool AssignFlight(Flight flight)
     {
+        if (AssignedFlight != null) return false;
         AssignedFlight = flight;
+        return true;
     }
 
-    /// <summary>
-    /// Clears the flight assignment from this boarding gate.
-    /// </summary>
-    public void ClearFlightAssignment()
-    {
-        AssignedFlight = null;
-    }
+    public void ClearAssignment() => AssignedFlight = null;
 
-    public override string ToString()
-    {
-        return $"Gate: {gateName}, Supports: CFFT({SupportsCFFT}), DDJB({SupportsDDJB}), LWTT({SupportsLWTT}), Assigned Flight: {AssignedFlight?.FlightNumber ?? "None"}";
-    }
+    // Added fee calculation foundation
+    public double CalculateUsageFee() => 300; // Base fee from Table 6
+
+    public override string ToString() =>
+        $"{GateName} (CFFT: {SupportsCFFT}, DDJB: {SupportsDDJB}, LWTT: {SupportsLWTT})";
 }

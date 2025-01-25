@@ -1,47 +1,23 @@
-﻿// Airline.cs
-using PRG2_T05_Flight;
-using System;
-using System.Collections.Generic;
-
-public class Airline
+﻿public class Airline
 {
     public string Name { get; set; }
     public string Code { get; set; }
     public Dictionary<string, Flight> Flights { get; private set; } = new Dictionary<string, Flight>();
 
-    public Airline(string name, string code)
+    public Airline(string code, string name)
     {
-        Name = name;
         Code = code;
+        Name = name;
     }
 
-    public bool AddFlight(Flight flight)
+    // Calculate total fees by summing fees from all flights
+    public double CalculateTotalFees()
     {
-        if (!Flights.ContainsKey(flight.FlightNumber))
-        {
-            Flights[flight.FlightNumber] = flight;
-            return true;
-        }
-        return false;
-    }
-
-    public bool RemoveFlight(Flight flight)
-    {
-        return Flights.Remove(flight.FlightNumber);
-    }
-
-    public double CalculateFees()
-    {
-        double totalFees = 0;
+        double total = 0;
         foreach (var flight in Flights.Values)
         {
-            totalFees += flight.CalculateFees();
+            total += flight.CalculateFees();
         }
-        return totalFees;
-    }
-
-    public override string ToString()
-    {
-        return $"Airline: {Name} ({Code}), Total Flights: {Flights.Count}";
+        return total;
     }
 }
