@@ -12,7 +12,7 @@ namespace PRG2_T05_Flight
         public string Origin { get; set; }
         public string Destination { get; set; }
         public DateTime ExpectedTime { get; set; }
-        public string Status { get; set; }
+        public string? Status { get; set; } = null; // edited this code for feature 5
 
         public Flight (string flight_no, string origin, string destination, DateTime expected_time, string status)
         {

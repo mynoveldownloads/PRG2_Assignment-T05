@@ -104,12 +104,84 @@ namespace PRG2_T05_Flight
                 Console.WriteLine($"Error loading boarding gates: {ex.Message}");
             }
         }
+        
+        // option 3
+        static void AssignBoardingGateToFlight (Dictionary<string, BoardingGate> boarding_gate_dict, Dictionary<string, Flight> flight_dict)
+        {
+            try
+            {
+                Console.WriteLine("=============================================\r\nAssign a Boarding Gate to a Flight\r\n=============================================\r\nEnter Flight Number:\n");
+                string flight_no = Console.ReadLine();
+
+                Console.WriteLine("Enter Boarding Gate Name:\n");
+                string gate_name = Console.ReadLine();
+
+                BoardingGate boarding_gate = boarding_gate_dict[gate_name];
+                Console.WriteLine($"Supports DDJB: {boarding_gate.SupportsDDJB}");
+                Console.WriteLine($"Supports CFFT: {boarding_gate.SupportsCFFT}");
+                Console.WriteLine($"Supports LWTT: {boarding_gate.SupportsLWTT}");
+
+                Console.WriteLine("Would you like to update the status of the flight? (Y/N)");
+                string choice = Console.ReadLine().ToUpper();
+                Dictionary<int, bool> dict_of_support = new Dictionary<int, bool>();
+                dict_of_support[1] = boarding_gate.SupportsLWTT;
+                dict_of_support[2] = boarding_gate.SupportsCFFT;
+                dict_of_support[3] = boarding_gate.SupportsDDJB;
+                switch ( choice )
+                /*
+                 * // LWTT -> Delay
+                    // DDJB -> On Time
+                    // CFFT -> Boarding
+                 */
+                {
+                    case "Y":
+                        Console.WriteLine("1. Delayed\r\n2. Boarding\r\n3. On Time\r\nPlease select the new status of the flight:\n");
+                        
+                        // 1 -> LWTT, 2 -> CFFT, 3 -> DDJB
+                        int choice2 = int.Parse( Console.ReadLine() );
+                        // if true, add flight to boardinggate
+                        if (dict_of_support.ContainsKey(choice2))
+                        {
+                            if (dict_of_support[choice2] == true)
+                            {
+                                boarding_gate.AssignedFlight = flight_dict[flight_no];
+                                Console.WriteLine($"Flight {flight_no} has been assigned to Boarding Gate {gate_name}!");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Select an option that is True");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Enter number 1 to 3 only");
+                        }
+
+
+                        
+                        break;
+                    case "N":
+                        Console.WriteLine("bruh y r u here then?");
+                        break;
+                    default:
+                        Console.WriteLine("Please enter Y or N only");
+                        break;
+                }
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine("Please enter a valid flight number");
+            }
+        }
+
 
         /// <summary>
         /// Loads flights from a CSV file and adds them to a dictionary.
         /// This is Feature 2: Loading Flights
         /// </summary>
 
+
+        // edited to fix feature 5
         static void LoadFlightsCSV (Dictionary<string, Flight> flight_dict)
 
         {
@@ -150,17 +222,22 @@ namespace PRG2_T05_Flight
                     CFFTFlight new_flight = new CFFTFlight(flight_no, origin, destination, expected_time, status);
                     flight_dict[flight_no] = new_flight;
                 }
+                else
+                {
+                    NORMFlight new_flight = new NORMFlight(flight_no, origin, destination, expected_time, status); // added this for feature 5
+                    flight_dict[flight_no] = new_flight; // feature 5 fixed, listallflights method fixed to display all flights including null special codes
+                }
             }
             Console.WriteLine("Flights loaded successfully.\n");
         }
 
-        static string GetStatus(string special_request_code)
+        static string? GetStatus(string special_request_code)
         {
             if (special_request_code == "LWTT") return "Delay";
             else if (special_request_code == "DDJB") return "On Time";
             else if (special_request_code == "CFFT") return "Boarding";
 
-            return "None";
+            return null;
         }
 
         static void ListAllFlights(Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict)
@@ -299,7 +376,7 @@ namespace PRG2_T05_Flight
                             break;
 
                         case 3:
-
+                            AssignBoardingGateToFlight(boarding_gate_dict, flight_dict);
                             break;
 
                         case 4:
@@ -346,7 +423,7 @@ namespace PRG2_T05_Flight
  * feature 2: load csv file (flights) DONE
  * feature 3: display flights informaion DONE
  * feature 4: display boarding gates information
- * feature 5: assign boarding gate to a flight (SKIP FOR NOW)
+ * feature 5: assign boarding gate to a flight DONE
  * feature 6: create new flight DONE
  * feature 7: display full flight details from an airline
  * feature 8: modify flight details
