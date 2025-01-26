@@ -389,10 +389,34 @@ namespace PRG2_T05_Flight
                 try
                 {
                     Console.Write("Enter Flight Number: "); string flight_no = Console.ReadLine();
+                    if (flight_no == "") { Console.WriteLine("Please enter a valid input! "); continue; }
+
                     Console.WriteLine("Enter Origin: "); string origin = Console.ReadLine();
+                    if (origin == "") { Console.WriteLine("Please enter a valid input! "); continue; }
+
                     Console.WriteLine("Enter Destination: "); string destination = Console.ReadLine();
-                    Console.WriteLine("Enter Expected Departure/Arrival Time(dd/mm/yyyy hh:mm): "); DateTime expected_time = DateTime.Parse(Console.ReadLine());
+                    if (destination == "") { Console.WriteLine("Please enter a valid input! "); continue; }
+
+                    //Console.WriteLine("Enter Expected Departure/Arrival Time(dd/mm/yyyy hh:mm): "); DateTime expected_time = DateTime.Parse(Console.ReadLine());
+                    //if (expected_time == "" && expected_time.GetType != DateTime) { Console.WriteLine("Please enter a valid input! "); continue; }
+
+                    Console.WriteLine("Enter Expected Departure/Arrival Time(dd/mm/yyyy hh:mm): ");
+                    DateTime expected_time = DateTime.Now;
+                    string time_input = Console.ReadLine();
+
+                    if (time_input == "") { Console.WriteLine("Please enter a proper datetime input!"); continue; }
+
+                    try
+                    {
+                        DateTime proper_datetime_format = DateTime.Parse(time_input);
+                    }
+                    catch (FormatException)
+                    {
+                        Console.WriteLine("Please enter a valid input in the format dd/MM/yyyy HH:mm!"); continue;
+                    }
+
                     Console.WriteLine("Enter Special Request Code(CFFT/DDJB/LWTT/None): "); string special_request_code = Console.ReadLine();
+                    if (special_request_code == "") { Console.WriteLine("Please enter a valid input!"); continue; }
 
                     // ***NOTE: Flight class is abstract, cant be instantiated directly
                     string status = GetStatus(special_request_code);
