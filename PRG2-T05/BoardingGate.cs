@@ -14,7 +14,7 @@ public class BoardingGate
     public bool SupportsCFFT { get; set; }
     public bool SupportsDDJB { get; set; }
     public bool SupportsLWTT { get; set; }
-    public Flight? AssignedFlight { get;  set; } // removed private, cant be accessed for option 3
+    public Flight? AssignedFlight { get; set; } // removed private, cant be accessed for option 3
 
     public BoardingGate(string GateName, bool supportsCFFT, bool supportsDDJB, bool supportsLWTT)
     {
@@ -26,7 +26,7 @@ public class BoardingGate
 
     public double CalculateFees()
     {
-        return 0;
+        return 300;
     }
 
     public override string ToString()
