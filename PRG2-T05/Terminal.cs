@@ -1,3 +1,11 @@
+//==========================================================
+// Student Number	: S10259207E
+// Student Name	: Raphael Adesta Pratidina
+// Partner Name	: Yeaw Min Lee
+//==========================================================
+
+
+
 // Terminal.cs
 using PRG2_T05_Flight;
 

@@ -1,3 +1,10 @@
+//==========================================================
+// Student Number	: S10259207E
+// Student Name	: Raphael Adesta Pratidina
+// Partner Name	: Yeaw Min Lee
+//==========================================================
+
+
 using System;
 using System.Collections.Generic;
 using System.IO;

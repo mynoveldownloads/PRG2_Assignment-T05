@@ -1,4 +1,11 @@
-﻿// BoardingGate.cs
+﻿//==========================================================
+// Student Number	: S10259207E
+// Student Name	: Raphael Adesta Pratidina
+// Partner Name	: Yeaw Min Lee
+//==========================================================
+
+
+// BoardingGate.cs
 using PRG2_T05_Flight;
 
 public class BoardingGate
