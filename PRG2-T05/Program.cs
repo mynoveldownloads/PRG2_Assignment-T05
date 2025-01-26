@@ -39,25 +39,38 @@ namespace PRG2_T05_Flight
         {
             try
             {
+                Console.WriteLine("Loading Airlines...");
                 using (StreamReader reader = new StreamReader("airlines.csv"))
                 {
-                    string? line;
-                    while ((line = reader.ReadLine()) != null)
+                    //string? line;
+                    //while ((line = reader.ReadLine()) != null) // -> old code, takes in header row as part of dataset
+                    //{
+                    //    Console.WriteLine($"{line}");
+                    //    var data = line.Split(',');
+                    //    if (data.Length >= 2)
+                    //    {
+                    //        string airlineName = data[0].Trim();                            
+                    //        string airlineCode = data[1].Trim();
+                    //        Airline airline = new Airline(name: airlineName, code: airlineCode);
+                    //        airline_dict[airlineCode] = airline; // rphl edit: added every airline object to airline dict
+                    //                                             // airline_dict in main method is updated
+                    //        //Console.WriteLine($"Loaded Airline: {airlineCode} - {airlineName}");
+                    //    }
+                    //}
+
+                    var data = File.ReadAllLines("airlines.csv");
+                    for (int i = 1; i < data.Length; i++) // recommended fix (rphl)
                     {
-                        var data = line.Split(',');
-                        if (data.Length >= 2)
-                        {
-                            string airlineName = data[0].Trim();                            
-                            string airlineCode = data[1].Trim();
-                            Airline airline = new Airline(name: airlineName, code: airlineCode);
-                            airline_dict[airlineCode] = airline; // rphl edit: added every airline object to airline dict
-                                                                 // airline_dict in main method is updated
-                            //Console.WriteLine($"Loaded Airline: {airlineCode} - {airlineName}");
-                        }
+                        //Console.WriteLine($"{data[i]}");
+                        string[] splitData = data[i].Split(",");
+                        string airlineName = splitData[0];
+                        string airlineCode = splitData[1];
+                        Airline airline = new Airline(name: airlineName, code: airlineCode);
+                        airline_dict[airlineCode] = airline;
+
                     }
                 }
-
-                Console.WriteLine("Airlines loaded successfully.");
+                Console.WriteLine($"{airline_dict.Count} Airlines Loaded!");
             }
             catch (Exception ex)
             {
@@ -76,29 +89,44 @@ namespace PRG2_T05_Flight
         {
             try
             {
-                using (StreamReader reader = new StreamReader("boardinggates.csv"))
+                Console.WriteLine("Loading Boarding Gates...");
+                //using (StreamReader reader = new StreamReader("boardinggates.csv")) // -> old code, same issue as load airlines csv method
+                //{
+                //    string? line;
+                //    while ((line = reader.ReadLine()) != null)
+                //    {
+                //        var data = line.Split(',');
+                //        if (data.Length >= 4)
+                //        {
+                //            string gateName = data[0].Trim();
+                //            bool supportsCFFT = data[1].Trim().Equals("true", StringComparison.OrdinalIgnoreCase);
+                //            bool supportsDDJB = data[2].Trim().Equals("true", StringComparison.OrdinalIgnoreCase);
+                //            bool supportsLWTT = data[3].Trim().Equals("true", StringComparison.OrdinalIgnoreCase);
+
+                //            BoardingGate gate = new BoardingGate(gateName, supportsCFFT, supportsDDJB, supportsLWTT);
+
+                //            boarding_gate_dict[gateName] = gate; // rphl edit: added every boardinggate object to boarding gate dict
+                //            //Console.WriteLine($"Loaded Boarding Gate: {gateName} (CFFT: {supportsCFFT}, DDJB: {supportsDDJB}, LWTT: {supportsLWTT})");
+                //            // boarding gate dict with gateName as key
+                //        }
+                //    }
+                //}
+
+                var data = File.ReadAllLines("boardinggates.csv"); // -> updated code (rphl)
+                for (int i = 1; i < data.Length; i++)
                 {
-                    string? line;
-                    while ((line = reader.ReadLine()) != null)
-                    {
-                        var data = line.Split(',');
-                        if (data.Length >= 4)
-                        {
-                            string gateName = data[0].Trim();
-                            bool supportsCFFT = data[1].Trim().Equals("true", StringComparison.OrdinalIgnoreCase);
-                            bool supportsDDJB = data[2].Trim().Equals("true", StringComparison.OrdinalIgnoreCase);
-                            bool supportsLWTT = data[3].Trim().Equals("true", StringComparison.OrdinalIgnoreCase);
+                    string[] dataSplit = data[i].Split(",");
+                    string gateName = dataSplit[0];
+                    bool supportsCFFT = bool.Parse(dataSplit[1]);
+                    bool supportsDDJB = bool.Parse(dataSplit[2]);
+                    bool supportsLWTT = bool.Parse(dataSplit[3]);
 
-                            BoardingGate gate = new BoardingGate(gateName, supportsCFFT, supportsDDJB, supportsLWTT);
+                    BoardingGate gate = new BoardingGate(gateName, supportsCFFT, supportsDDJB, supportsLWTT);
 
-                            boarding_gate_dict[gateName] = gate; // rphl edit: added every boardinggate object to boarding gate dict
-                            //Console.WriteLine($"Loaded Boarding Gate: {gateName} (CFFT: {supportsCFFT}, DDJB: {supportsDDJB}, LWTT: {supportsLWTT})");
-                            // boarding gate dict with gateName as key
-                        }
-                    }
+                    boarding_gate_dict[gateName] = gate;
                 }
 
-                Console.WriteLine("Boarding gates loaded successfully.");
+                Console.WriteLine($"{boarding_gate_dict.Count} Boarding Gates Loaded!");
             }
             catch (Exception ex)
             {
@@ -261,8 +289,8 @@ namespace PRG2_T05_Flight
 
         // edited to fix feature 5
         static void LoadFlightsCSV (Dictionary<string, Flight> flight_dict)
-
         {
+            Console.WriteLine("Loading Flights...");
             string[] file = File.ReadAllLines("flights.csv");
             for (int i = 1; i < file.Length; i++)
             {
@@ -306,7 +334,7 @@ namespace PRG2_T05_Flight
                     flight_dict[flight_no] = new_flight; // feature 5 fixed, listallflights method fixed to display all flights including null special codes
                 }
             }
-            Console.WriteLine("Flights loaded successfully.\n");
+            Console.WriteLine($"{flight_dict.Count} Flights Loaded!");
         }
 
         static string? GetStatus(string special_request_code)
