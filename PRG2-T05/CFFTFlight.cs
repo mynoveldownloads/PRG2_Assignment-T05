@@ -6,50 +6,33 @@ using System.Threading.Tasks;
 using PRG2_T05_Flight;
 
 
-//namespace PRG2_T05_CFFTFlight
-//{
-//    public class CFFTFlight : Flight
-//    {
-//        public double RequestFee { get; set; } = 150;
-
-//        // base constructor
-//        public CFFTFlight(string flight_no, string origin, string destination, DateTime expected_time, string status, double request_fee) : base(flight_no, origin, destination, expected_time, status)
-//        {
-//            RequestFee = request_fee;
-//        }
-
-//        // overloaded constructor to exclude request_fee as argument
-//        public CFFTFlight(string flight_no, string origin, string destination, DateTime expected_time, string status) : base(flight_no, origin, destination, expected_time, status)
-//        {
-
-//        }
-
-//        public override string ToString()
-//        {
-//            return base.ToString();
-//        }
-
-//        public override double CalculateFees()
-//        {
-//            RequestFee += 300;
-//            return RequestFee;
-//        }
-//    }
-//}
-
-
-//yeaw min code
-namespace PRG2_T05_Flight
+namespace PRG2_T05_CFFTFlight
 {
     public class CFFTFlight : Flight
     {
-        public CFFTFlight(string number, string origin, string destination, DateTime expectedTime)
-            : base(number, origin, destination, expectedTime, "Boarding") { }
+        public double RequestFee { get; set; } = 150;
+
+        // base constructor
+        public CFFTFlight(string flight_no, string origin, string destination, DateTime expected_time, string status, double request_fee) : base(flight_no, origin, destination, expected_time, status)
+        {
+            RequestFee = request_fee;
+        }
+
+        // overloaded constructor to exclude request_fee as argument
+        public CFFTFlight(string flight_no, string origin, string destination, DateTime expected_time, string status) : base(flight_no, origin, destination, expected_time, status)
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return base.ToString();
+        }
 
         public override double CalculateFees()
         {
-            double baseFee = Destination == "SIN" ? 500 : 800;
-            return baseFee + 150 + base.CalculateFees(); // CFFT fee + Boarding Gate fee
+            RequestFee += 300;
+            return RequestFee;
         }
     }
 }
