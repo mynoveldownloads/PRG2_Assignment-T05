@@ -93,6 +93,7 @@ namespace PRG2_T05_Flight
 
                             boarding_gate_dict[gateName] = gate; // rphl edit: added every boardinggate object to boarding gate dict
                             //Console.WriteLine($"Loaded Boarding Gate: {gateName} (CFFT: {supportsCFFT}, DDJB: {supportsDDJB}, LWTT: {supportsLWTT})");
+                            // boarding gate dict with gateName as key
                         }
                     }
                 }
@@ -104,73 +105,150 @@ namespace PRG2_T05_Flight
                 Console.WriteLine($"Error loading boarding gates: {ex.Message}");
             }
         }
-        
+
+        static List<string>? CheckFlightAssignment(string flight_no, Dictionary<string, BoardingGate> boarding_gate_dict) // check if flight is already assigned to a boarding gate
+        {
+            List<string>? found_assigned_flight = null;
+            foreach (var gate_name in  boarding_gate_dict.Keys)
+            {
+                if (boarding_gate_dict[gate_name].AssignedFlight != null && boarding_gate_dict[gate_name].AssignedFlight.FlightNumber == flight_no)
+                {
+                    found_assigned_flight = new List<string> { flight_no, gate_name}; break;
+                }
+            }
+
+            return found_assigned_flight;
+        }
+
         // option 3
         static void AssignBoardingGateToFlight (Dictionary<string, BoardingGate> boarding_gate_dict, Dictionary<string, Flight> flight_dict)
         {
-            try
+            bool exit_method = false;
+            while (!exit_method)
             {
-                Console.WriteLine("=============================================\r\nAssign a Boarding Gate to a Flight\r\n=============================================\r\nEnter Flight Number:\n");
-                string flight_no = Console.ReadLine();
-
-                Console.WriteLine("Enter Boarding Gate Name:\n");
-                string gate_name = Console.ReadLine();
-
-                BoardingGate boarding_gate = boarding_gate_dict[gate_name];
-                Console.WriteLine($"Supports DDJB: {boarding_gate.SupportsDDJB}");
-                Console.WriteLine($"Supports CFFT: {boarding_gate.SupportsCFFT}");
-                Console.WriteLine($"Supports LWTT: {boarding_gate.SupportsLWTT}");
-
-                Console.WriteLine("Would you like to update the status of the flight? (Y/N)");
-                string choice = Console.ReadLine().ToUpper();
-                Dictionary<int, bool> dict_of_support = new Dictionary<int, bool>();
-                dict_of_support[1] = boarding_gate.SupportsLWTT;
-                dict_of_support[2] = boarding_gate.SupportsCFFT;
-                dict_of_support[3] = boarding_gate.SupportsDDJB;
-                switch ( choice )
-                /*
-                 * // LWTT -> Delay
-                    // DDJB -> On Time
-                    // CFFT -> Boarding
-                 */
+                try
                 {
-                    case "Y":
-                        Console.WriteLine("1. Delayed\r\n2. Boarding\r\n3. On Time\r\nPlease select the new status of the flight:\n");
-                        
-                        // 1 -> LWTT, 2 -> CFFT, 3 -> DDJB
-                        int choice2 = int.Parse( Console.ReadLine() );
-                        // if true, add flight to boardinggate
-                        if (dict_of_support.ContainsKey(choice2))
-                        {
-                            if (dict_of_support[choice2] == true)
-                            {
-                                boarding_gate.AssignedFlight = flight_dict[flight_no];
-                                Console.WriteLine($"Flight {flight_no} has been assigned to Boarding Gate {gate_name}!");
-                            }
-                            else
-                            {
-                                Console.WriteLine("Select an option that is True");
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Enter number 1 to 3 only");
-                        }
+                    Console.WriteLine("=============================================\r\nAssign a Boarding Gate to a Flight\r\n=============================================\r\nEnter Flight Number:");
+                    string flight_no = Console.ReadLine().ToUpper();
 
+                    if (!flight_dict.ContainsKey(flight_no))
+                    {
+                        Console.WriteLine($"Flight number \"{flight_no}\" does not exist in Flight dictionary."); continue;
+                    }
 
-                        
-                        break;
-                    case "N":
-                        Console.WriteLine("bruh y r u here then?");
-                        break;
-                    default:
-                        Console.WriteLine("Please enter Y or N only");
-                        break;
+                    else if (CheckFlightAssignment(flight_no, boarding_gate_dict) != null) // check if a flight is already assigned to a boarding gate
+                    {
+                        List<string> assigned_flights = CheckFlightAssignment(flight_no, boarding_gate_dict);
+                        string found_flight_no = assigned_flights[0];
+                        string found_gate_name = assigned_flights[1];
+                        Console.WriteLine($"An error occurred! Flight number {found_flight_no} already exists in gate {found_gate_name}"); continue;
+                    }
+
+                    Console.WriteLine("Enter Boarding Gate Name:\n");
+                    string gate_name = Console.ReadLine().ToUpper();
+
+                    if (!boarding_gate_dict.ContainsKey(gate_name))
+                    {
+                        Console.WriteLine($"Gate name \"{gate_name}\" does not exist in Boarding Gates dictionary."); continue ;
+                    }
+
+                    BoardingGate boarding_gate = boarding_gate_dict[gate_name];
+
+                    if (boarding_gate.AssignedFlight != null)
+                    {
+                        Console.WriteLine($"An error occurred! Boarding gate {gate_name} is already assigned to flight {boarding_gate.AssignedFlight.FlightNumber}."); continue;
+                    }
+
+                    Console.WriteLine($"Supports DDJB: {boarding_gate.SupportsDDJB}");
+                    Console.WriteLine($"Supports CFFT: {boarding_gate.SupportsCFFT}");
+                    Console.WriteLine($"Supports LWTT: {boarding_gate.SupportsLWTT}");
+
+                    Console.WriteLine("Would you like to update the status of the flight? (Y/N)");
+                    string choice = Console.ReadLine().ToUpper();
+
+                    string[] yes_or_no = { "Y", "N" };
+                    if (!yes_or_no.Contains(choice))
+                    {
+                        Console.WriteLine("Please enter Y or N only!"); continue;
+                    }
+
+                    Dictionary<int, bool> dict_of_support = new Dictionary<int, bool>();
+                    dict_of_support[1] = boarding_gate.SupportsLWTT;
+                    dict_of_support[2] = boarding_gate.SupportsCFFT;
+                    dict_of_support[3] = boarding_gate.SupportsDDJB;
+
+                    //var eg_object = flight_dict["SQ 115"]; // example debug code
+                    //boarding_gate.AssignedFlight = eg_object; // check if duplication is possible or not
+                    //boarding_gate_dict["A20"] = boarding_gate;
+                    switch (choice)
+                    /*
+                        * // LWTT -> Delay
+                        // DDJB -> On Time
+                        // CFFT -> Boarding
+                        */
+                    {
+                        case "Y":
+                            Console.WriteLine("1. Delayed\r\n2. Boarding\r\n3. On Time\r\nPlease select the new status of the flight:");
+
+                            // 1 -> LWTT, 2 -> CFFT, 3 -> DDJB
+                            try
+                            {
+                                int choice2 = int.Parse(Console.ReadLine());
+                                // if true, add flight to boardinggate
+                                if (dict_of_support.ContainsKey(choice2))
+                                {
+                                    if (dict_of_support[choice2] == true)
+                                    {
+
+                                        if (boarding_gate.AssignedFlight == null)
+                                        {
+
+                                            boarding_gate.AssignedFlight = flight_dict[flight_no];
+                                            boarding_gate_dict[gate_name] = boarding_gate;
+                                            Console.WriteLine(boarding_gate_dict[gate_name].ToString());
+                                            Console.WriteLine($"Flight {flight_no} has been assigned to Boarding Gate {gate_name}!");
+                                            exit_method = true;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"An error occured! Flight {boarding_gate.AssignedFlight.FlightNumber} is already assigned to gate {gate_name}");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Select an option that is True");
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Enter number 1 to 3 only");
+                                }
+                            }
+                            catch (FormatException e)
+                            {
+                                Console.WriteLine("Enter values 1 to 3 only!");
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine($"AN error occurred: {e}");
+                            }
+
+                            break;
+                        case "N":
+                            Console.WriteLine("Method exited.");
+                            exit_method = true;
+                            break;
+
+                        default:
+                            Console.WriteLine("Please enter Y or N only");
+                            break;
+                    }
+                    
                 }
-            }
-            catch (FormatException ex)
-            {
-                Console.WriteLine("Please enter a valid flight number");
+                catch (FormatException ex)
+                {
+                    Console.WriteLine("Please enter a valid flight number");
+                }
             }
         }
 
@@ -245,7 +323,7 @@ namespace PRG2_T05_Flight
             Console.WriteLine($"{"Flight Number", -16}{"Airline Name",-23}{"Origin",-23}{"Destination",-23}{"Expected Departure/Arrival Time",-31}");
             foreach (var  flight in flight_dict.Values)
             {
-
+                //Console.WriteLine(flight.GetType());
                 //Console.WriteLine($"{flight.FlightNumber,-16}{GetAirlineName(flight.FlightNumber),-23}{flight.Origin,-23}{flight.Destination,-23}{flight.ExpectedTime,-31}"); // old code, leave it here
                 Console.WriteLine($"{flight.FlightNumber,-16}{GetAirlineName(airline_dict, flight.FlightNumber),-23}{flight.Origin,-23}{flight.Destination,-23}{flight.ExpectedTime,-31}");
             }
