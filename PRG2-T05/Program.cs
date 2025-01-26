@@ -7,6 +7,7 @@ using PRG2_T05_DDJBFlight;
 using PRG2_T05_Flight;
 using PRG2_T05_LWTTFlight;
 using PRG2_T05_NORMFlight;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace PRG2_T05_Flight
@@ -353,11 +354,19 @@ namespace PRG2_T05_Flight
         static void ListBoardingGates(Dictionary<string, BoardingGate> boarding_gate_dict)
         {
             Console.WriteLine("=============================================\r\nList of Boarding Gates for Changi Airport Terminal 5\r\n=============================================");
-            Console.WriteLine("Gate Name\tDDJB\tCFFT\tLWTT");
-            foreach (var gate in boarding_gate_dict.Values.OrderBy(g => g.gateName))
+            //Console.WriteLine("Gate Name\tDDJB\tCFFT\tLWTT");
+            //foreach (var gate in boarding_gate_dict.Values.OrderBy(g => g.gateName))
+            //{
+            //    Console.WriteLine($"{gate.gateName,-8}\t{gate.SupportsDDJB}\t{gate.SupportsCFFT}\t{gate.SupportsLWTT}");
+            //}
+            foreach (var gate in boarding_gate_dict.Values
+    .OrderBy(g => new string(g.gateName.TakeWhile(char.IsLetter).ToArray())) // Sort by the prefix (e.g., "A", "B", "C")
+    .ThenBy(g => int.Parse(new string(g.gateName.SkipWhile(c => !char.IsDigit(c)).ToArray())))) // Sort by the numeric part
             {
                 Console.WriteLine($"{gate.gateName,-8}\t{gate.SupportsDDJB}\t{gate.SupportsCFFT}\t{gate.SupportsLWTT}");
             }
+
+
         }
 
         // FEATURE 7: Display Airline Flights (Original Implementation)
