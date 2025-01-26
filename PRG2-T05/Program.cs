@@ -136,16 +136,18 @@ namespace PRG2_T05_Flight
 
         static List<string>? CheckFlightAssignment(string flight_no, Dictionary<string, BoardingGate> boarding_gate_dict) // check if flight is already assigned to a boarding gate
         {
-            List<string>? found_assigned_flight = null;
+            //List<string>? found_assigned_flight = null;
             foreach (var gate_name in  boarding_gate_dict.Keys)
             {
                 if (boarding_gate_dict[gate_name].AssignedFlight != null && boarding_gate_dict[gate_name].AssignedFlight.FlightNumber == flight_no)
                 {
-                    found_assigned_flight = new List<string> { flight_no, gate_name}; break;
+                    //found_assigned_flight = new List<string> { flight_no, gate_name}; break;
+                    return new List<string> { flight_no, gate_name };
                 }
             }
 
-            return found_assigned_flight;
+            //return found_assigned_flight;
+            return null;
         }
 
         // option 3
@@ -348,6 +350,7 @@ namespace PRG2_T05_Flight
 
         static void ListAllFlights(Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict)
         {
+            Console.WriteLine("=============================================\r\nList of Flights for Changi Airport Terminal 5\r\n=============================================");
             Console.WriteLine($"{"Flight Number", -16}{"Airline Name",-23}{"Origin",-23}{"Destination",-23}{"Expected Departure/Arrival Time",-31}");
             foreach (var  flight in flight_dict.Values)
             {
@@ -356,27 +359,6 @@ namespace PRG2_T05_Flight
                 Console.WriteLine($"{flight.FlightNumber,-16}{GetAirlineName(airline_dict, flight.FlightNumber),-23}{flight.Origin,-23}{flight.Destination,-23}{flight.ExpectedTime,-31}");
             }
         }
-
-        //static string GetAirlineName(string airline_code) // old code, leaving it here in case needed in future
-        //{
-        //    string code = airline_code.Substring(0, 2); // extract the first 2 letters (airline code) to obtain the airline name
-            
-        //    Dictionary<string, string> airline_name_dict = new Dictionary<string, string>();
-
-        //    // initiate airlines.csv
-        //    string[] airline_csv = File.ReadAllLines("airlines.csv");
-        //    for (int i = 1; i < airline_csv.Length; i++)
-        //    {
-        //        string[] split_text = airline_csv[i].Split(",");
-        //        string extracted_name = split_text[0];
-        //        string extracted_code = split_text[1];
-
-        //        airline_name_dict[extracted_code] = extracted_name;
-        //    }
-        //    string airline_name = airline_name_dict[code];
-
-        //    return airline_name;
-        //}
 
         static string GetAirlineName(Dictionary<string, Airline> airline_dict, string airline_code)
         {
@@ -452,6 +434,27 @@ namespace PRG2_T05_Flight
             }
         }
 
+        static void DIsplayFlightSchedule(Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict, Dictionary<string, BoardingGate> boarding_gate_dict)
+        {
+            List<Flight> flights = flight_dict.Values.ToList();
+            flights.Sort();
+            Console.WriteLine("Flight Number   Airline Name           Origin                 Destination            Expected Departure/Arrival Time     Status          Boarding Gate");
+            //Console.WriteLine($"{flight.FlightNumber:-16}{GetAirlineName(airline_dict, flight.FlightNumber):-23}{flight.Origin:-23}{flight.Destination:-23}{flight.ExpectedTime:-36}{"Scheduled":-16}{assigned_boarding_gate:-13}");
+            foreach (Flight flight in flights)
+            {
+                //Console.WriteLine($" {flight.FlightNumber}, {GetAirlineName(airline_dict, flight.FlightNumber)} {flight.ExpectedTime}");
+                //string assigned_boarding_gate = CheckFlightAssignment(flight.FlightNumber, boarding_gate_dict)[1] ?? "Unassigned";
+                string assigned_boarding_gate = "Unassigned";
+                var result = CheckFlightAssignment(flight.FlightNumber, boarding_gate_dict);
+                if (result != null)
+                {
+                     if (result.Count >= 2) { assigned_boarding_gate = result[1]; }
+                }
+
+                Console.WriteLine($"{flight.FlightNumber,-16}{GetAirlineName(airline_dict, flight.FlightNumber),-23}{flight.Origin,-23}{flight.Destination,-23}{flight.ExpectedTime,-36}{"Scheduled",-16}{assigned_boarding_gate,-13}");
+            }
+        }
+
         static void DisplayMenu(Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict, Dictionary<string, BoardingGate> boarding_gate_dict)
         {
 
@@ -477,28 +480,30 @@ namespace PRG2_T05_Flight
                             ListAllFlights(flight_dict, airline_dict);
                             break;
 
-                        case 2:
-
+                        case 2: // feature 2 - yeaw min
+                            // display boarding gates information
                             break;
 
                         case 3:
                             AssignBoardingGateToFlight(boarding_gate_dict, flight_dict);
                             break;
 
-                        case 4:
-
+                        case 4: // feature 6 - rphl
+                            // create new flight
+                            CreateNewFlight(flight_dict);
                             break;
 
-                        case 5:
-
+                        case 5: // feature 7 - yeaw min
+                            // display airline flights
                             break;
 
-                        case 6:
-
+                        case 6: // modify flight details - yeaw min
+                            // feature 8
                             break;
 
-                        case 7:
-
+                        case 7: // feature 9 - rphl
+                            // display flight schedule
+                            DIsplayFlightSchedule(flight_dict, airline_dict, boarding_gate_dict);
                             break;
 
                         default:

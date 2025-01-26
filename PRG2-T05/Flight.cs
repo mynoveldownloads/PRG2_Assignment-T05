@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PRG2_T05_Flight
 {
-    public abstract class Flight
+    public abstract class Flight : IComparable<Flight>
     {
         public string FlightNumber {  get; set; }
         public string Origin { get; set; }
@@ -28,6 +28,15 @@ namespace PRG2_T05_Flight
             return base.ToString();
         }
 
-        public abstract double CalculateFees();
+        public virtual double CalculateFees()
+        {
+            return 300;
+        }
+
+        public int CompareTo(Flight other)
+        {
+            if (other == null) return 1;
+            return this.ExpectedTime.CompareTo(other.ExpectedTime);
+        }
     }
 }
