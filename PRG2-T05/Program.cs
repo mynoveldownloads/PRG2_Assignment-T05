@@ -181,7 +181,7 @@ namespace PRG2_T05_Flight
                         Console.WriteLine($"An error occurred! Flight number {found_flight_no} already exists in gate {found_gate_name}"); continue;
                     }
 
-                    Console.WriteLine("Enter Boarding Gate Name:\n");
+                    Console.WriteLine("Enter Boarding Gate Name:");
                     string gate_name = Console.ReadLine().ToUpper();
 
                     if (!boarding_gate_dict.ContainsKey(gate_name))
