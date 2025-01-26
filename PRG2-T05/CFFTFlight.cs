@@ -33,7 +33,7 @@ namespace PRG2_T05_CFFTFlight
 
         public override string ToString()
         {
-            return base.ToString();
+            return $"Flight number: {FlightNumber}, Origin: {Origin}, Destination: {Destination}, Expected time: {ExpectedTime}, Status: {Status}, Request Fee: {RequestFee}";
         }
 
         public override double CalculateFees()
