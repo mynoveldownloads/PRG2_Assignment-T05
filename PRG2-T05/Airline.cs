@@ -1,4 +1,11 @@
-﻿// Airline.cs
+﻿//==========================================================
+// Student Number	: S10259207E
+// Student Name	: Raphael Adesta Pratidina
+// Partner Name	: Yeaw Min Lee
+//==========================================================
+
+
+// Airline.cs
 using PRG2_T05_Flight;
 using System;
 using System.Collections.Generic;
