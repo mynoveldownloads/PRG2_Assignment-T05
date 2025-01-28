@@ -19,7 +19,7 @@ namespace PRG2_T05_Flight
             Dictionary<string, Flight> flight_dict = new Dictionary<string, Flight>();
             Dictionary<string, Airline> airline_dict = new Dictionary<string, Airline>();
             Dictionary<string, BoardingGate> boarding_gate_dict = new Dictionary<string, BoardingGate>();
-            Queue<BoardingGate> unassigned_queue = new Queue<BoardingGate> (); // 28jan: added unassigned_queue for advanced feature (a)
+            Queue<BoardingGate> unassigned_queue = new Queue<BoardingGate>(); // 28jan: added unassigned_queue for advanced feature (a)
             LoadAirlinesCSV(airline_dict);
             LoadBoardingGatesCSV(boarding_gate_dict);
             LoadFlightsCSV(flight_dict);
@@ -117,7 +117,7 @@ namespace PRG2_T05_Flight
                         continue;
                     }
 
-                    Console.WriteLine("Enter Boarding Gate Name:\n");
+                    Console.WriteLine("Enter Boarding Gate Name:");
                     string gate_name = Console.ReadLine().ToUpper();
 
                     if (!boarding_gate_dict.ContainsKey(gate_name))
@@ -485,21 +485,41 @@ namespace PRG2_T05_Flight
                 {
                     Console.WriteLine($"An error occurred! {e.Message}");
                 }
-            } 
+            }
 
         }
 
         // 28jan: advanced feature (a)
         static void ProcessUnassignedFlights(Dictionary<string, BoardingGate> boarding_gate_dict, Dictionary<string, Flight> flight_dict, Queue<BoardingGate> unassigned_queue)
         {
+            Console.WriteLine("method triggered");
             // check if each boardinggate has an assigned flight, if it has null assignedflight, add it to a queue
             //Queue<BoardingGate> unassigned_queue = new Queue<BoardingGate>();
-            foreach (var boarding_gate in  boarding_gate_dict.Values)
+            List<Flight> assigned_flights = new List<Flight>();
+
+            foreach (var boarding_gate in boarding_gate_dict.Values)
             {
                 if (boarding_gate.AssignedFlight == null)
                 {
                     unassigned_queue.Enqueue(boarding_gate);
-                    Console.WriteLine($"");
+                    Console.WriteLine("haha");
+
+                }
+                else
+                {
+                    assigned_flights.Add(boarding_gate.AssignedFlight);
+                    //Console.WriteLine($"Gate {boarding_gate.gateName} is assigned to flight {boarding_gate.AssignedFlight.FlightNumber}"); // leaving this here for debugging
+                    // to get this output, assign a flight in option 3
+                }
+            }
+
+            foreach (var flight in flight_dict.Values)
+            {
+                // display flights not assigned to a boardinggate
+                //Console.WriteLine($"{}");
+                if (!assigned_flights.Contains(flight))
+                {
+                    Console.WriteLine($"{flight.ToString()}");
                 }
             }
         }
@@ -548,6 +568,7 @@ namespace PRG2_T05_Flight
                             DIsplayFlightSchedule(flight_dict, airline_dict, boarding_gate_dict);
                             break;
                         case 8:
+                            Console.WriteLine("nig"); // works, method issue
                             ProcessUnassignedFlights(boarding_gate_dict, flight_dict, unassigned_queue);
                             break;
                         case 9:
@@ -564,5 +585,6 @@ namespace PRG2_T05_Flight
                 }
             }
         }
+
     }
 }
