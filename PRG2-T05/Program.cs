@@ -19,11 +19,10 @@ namespace PRG2_T05_Flight
             Dictionary<string, Flight> flight_dict = new Dictionary<string, Flight>();
             Dictionary<string, Airline> airline_dict = new Dictionary<string, Airline>();
             Dictionary<string, BoardingGate> boarding_gate_dict = new Dictionary<string, BoardingGate>();
-            Queue<Flight> unassigned_flight = new Queue<Flight>(); // 28jan: added unassigned_queue for advanced feature (a)
             LoadAirlinesCSV(airline_dict);
             LoadBoardingGatesCSV(boarding_gate_dict);
             LoadFlightsCSV(flight_dict);
-            DisplayMenu(flight_dict, airline_dict, boarding_gate_dict, unassigned_flight); // 28 jan: added unassigned_queue
+            DisplayMenu(flight_dict, airline_dict, boarding_gate_dict); // 28 jan: added unassigned_queue
         }
 
         /// <summary>
@@ -68,8 +67,10 @@ namespace PRG2_T05_Flight
                 {
                     string[] dataSplit = data[i].Split(",");
                     string gateName = dataSplit[0];
-                    bool supportsCFFT = bool.Parse(dataSplit[1]);
-                    bool supportsDDJB = bool.Parse(dataSplit[2]);
+
+                    // 28 jan: edited bool parsing (swap indexing DDJB and CFFT)
+                    bool supportsDDJB = bool.Parse(dataSplit[1]);
+                    bool supportsCFFT = bool.Parse(dataSplit[2]);
                     bool supportsLWTT = bool.Parse(dataSplit[3]);
                     BoardingGate gate = new BoardingGate(gateName, supportsCFFT, supportsDDJB, supportsLWTT);
                     boarding_gate_dict[gateName] = gate;
@@ -95,6 +96,33 @@ namespace PRG2_T05_Flight
             return null;
         }
 
+        static bool? AcceptRequestCode (string special_request_code, BoardingGate boarding_gate)
+        {
+            List<string>? strings = null;
+            var check_request_code = new Dictionary<string, bool>
+            {
+                { "DDJB", boarding_gate.SupportsDDJB },
+                { "CFFT", boarding_gate.SupportsCFFT },
+                { "LWTT", boarding_gate.SupportsLWTT }
+            };
+
+            if (check_request_code.ContainsKey(special_request_code))
+            {
+                // debugging purposes, to be deleted
+                //Console.WriteLine(special_request_code); Console.WriteLine(check_request_code[special_request_code]); Console.WriteLine("nigga");
+                return check_request_code[special_request_code];
+            }
+            else if (special_request_code == "NORM")
+            {
+                return true; // NORMFlight can use any unassigned boarding gate without restrictions
+            }
+            else
+            {
+                return null; // return null if the input special request code is foreign
+            }
+
+        }
+
         static void AssignBoardingGateToFlight(Dictionary<string, BoardingGate> boarding_gate_dict, Dictionary<string, Flight> flight_dict)
         {
             bool exit_method = false;
@@ -113,9 +141,12 @@ namespace PRG2_T05_Flight
                     else if (CheckFlightAssignment(flight_no, boarding_gate_dict) != null)
                     {
                         List<string> assigned_flights = CheckFlightAssignment(flight_no, boarding_gate_dict);
-                        Console.WriteLine($"An error occurred! Flight number {assigned_flights[0]} already exists in gate {assigned_flights[1]}");
+                        Console.WriteLine($"An error occurred! Flight number \"{assigned_flights[0]}\" already exists in gate \"{assigned_flights[1]}\"");
                         continue;
                     }
+                    string special_request_code = flight_dict[flight_no].GetType().Name.Substring(0,4); // obtains the type of the object, extracts the first 4 letters to get the special request code
+                    //Console.WriteLine(special_request_code); // -> for debugging
+                    
 
                     Console.WriteLine("Enter Boarding Gate Name:");
                     string gate_name = Console.ReadLine().ToUpper();
@@ -125,14 +156,29 @@ namespace PRG2_T05_Flight
                         Console.WriteLine($"Gate name \"{gate_name}\" does not exist in Boarding Gates dictionary.");
                         continue;
                     }
+                    else
+                    {
+                        bool? result = AcceptRequestCode(special_request_code, boarding_gate_dict[gate_name]);
+                        if (result == false)
+                        {
+                            Console.WriteLine($"Boarding Gate \"{gate_name}\" does not accept Flight \"{flight_no}\" as it does not support \"{special_request_code}\""); continue;
+                        }
+                        else if (result == null)
+                        {
+                            Console.WriteLine($"Special request code \"{special_request_code}\" is not recognised."); continue;
+                        }
+                    }
+                    
 
                     BoardingGate boarding_gate = boarding_gate_dict[gate_name];
 
                     if (boarding_gate.AssignedFlight != null)
                     {
-                        Console.WriteLine($"An error occurred! Boarding gate {gate_name} is already assigned to flight {boarding_gate.AssignedFlight.FlightNumber}.");
+                        Console.WriteLine($"An error occurred! Boarding gate \"{gate_name}\" is already assigned to flight {boarding_gate.AssignedFlight.FlightNumber}.");
                         continue;
                     }
+
+                    Flight selected_flight = flight_dict[flight_no];
 
                     Console.WriteLine($"Supports DDJB: {boarding_gate.SupportsDDJB}");
                     Console.WriteLine($"Supports CFFT: {boarding_gate.SupportsCFFT}");
@@ -148,11 +194,14 @@ namespace PRG2_T05_Flight
                         continue;
                     }
 
-                    Dictionary<int, bool> dict_of_support = new Dictionary<int, bool>();
-                    dict_of_support[1] = boarding_gate.SupportsLWTT; // 1. Delayed LWTT 
-                    dict_of_support[2] = boarding_gate.SupportsCFFT; // 2. Boarding  CFFT 
-                    dict_of_support[3] = boarding_gate.SupportsDDJB; // 3. On Time DDJB 
+                    Dictionary<int, string> choices = new Dictionary<int, string>
+                    {
+                        { 1, "Delayed" },
+                        { 2, "Boarding" },
+                        { 3, "On Time" }
+                    };
 
+                    string status = "";
                     switch (choice)
                     {
                         case "Y":
@@ -160,27 +209,19 @@ namespace PRG2_T05_Flight
                             try
                             {
                                 int choice2 = int.Parse(Console.ReadLine());
-                                if (dict_of_support.ContainsKey(choice2))
+
+                                if (choices.ContainsKey(choice2))
                                 {
-                                    if (dict_of_support[choice2] == true)
-                                    {
-                                        if (boarding_gate.AssignedFlight == null)
-                                        {
-                                            boarding_gate.AssignedFlight = flight_dict[flight_no];
-                                            boarding_gate_dict[gate_name] = boarding_gate;
-                                            Console.WriteLine(boarding_gate_dict[gate_name].ToString());
-                                            Console.WriteLine($"Flight {flight_no} has been assigned to Boarding Gate {gate_name}!");
-                                            exit_method = true;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Select an option that is True");
-                                    }
+                                    status = choices[choice2];
+                                    selected_flight.Status = status;
+                                    boarding_gate.AssignedFlight = selected_flight;
+                                    Console.WriteLine($"Flight {flight_no} has been assigned to Boarding Gate {gate_name}!");
+                                    exit_method = true;
+                                    break;
                                 }
                                 else
                                 {
-                                    Console.WriteLine("Enter number 1 to 3 only");
+                                    Console.WriteLine("Please enter values 1 to 3 only!"); continue;
                                 }
                             }
                             catch (FormatException e)
@@ -189,15 +230,15 @@ namespace PRG2_T05_Flight
                             }
                             catch (Exception e)
                             {
-                                Console.WriteLine($"An error occurred: {e}");
+                                Console.WriteLine($"An error occurred! {e}");
                             }
                             break;
                         case "N":
-                            Console.WriteLine("Method exited.");
+                            status = choices[3];
+                            selected_flight.Status = status;
+                            boarding_gate.AssignedFlight = selected_flight;
+                            Console.WriteLine($"Flight {flight_no} has been assigned to Boarding Gate {gate_name}!");
                             exit_method = true;
-                            break;
-                        default:
-                            Console.WriteLine("Please enter Y or N only");
                             break;
                     }
                 }
@@ -220,7 +261,8 @@ namespace PRG2_T05_Flight
                 string destination = split_text[2];
                 DateTime expected_time = DateTime.Parse(split_text[3]);
                 string special_request_code = split_text[4];
-                string status = GetStatus(special_request_code);
+                //string status = GetStatus(special_request_code); // old code, status does not translate to special request code
+                string? status = null;
 
                 if (special_request_code == "LWTT")
                 {
@@ -338,7 +380,7 @@ namespace PRG2_T05_Flight
             }
         }
 
-        static void DIsplayFlightSchedule(Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict, Dictionary<string, BoardingGate> boarding_gate_dict)
+        static void DisplayFlightSchedule(Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict, Dictionary<string, BoardingGate> boarding_gate_dict)
         {
             List<Flight> flights = flight_dict.Values.ToList();
             flights.Sort();
@@ -364,11 +406,12 @@ namespace PRG2_T05_Flight
             //{
             //    Console.WriteLine($"{gate.gateName,-8}\t{gate.SupportsDDJB}\t{gate.SupportsCFFT}\t{gate.SupportsLWTT}");
             //}
+            Console.WriteLine("Gate Name       DDJB                   CFFT                   LWTT"); // 28jan: added header
             foreach (var gate in boarding_gate_dict.Values
     .OrderBy(g => new string(g.gateName.TakeWhile(char.IsLetter).ToArray())) // Sort by the prefix (e.g., "A", "B", "C")
     .ThenBy(g => int.Parse(new string(g.gateName.SkipWhile(c => !char.IsDigit(c)).ToArray())))) // Sort by the numeric part
             {
-                Console.WriteLine($"{gate.gateName,-8}\t{gate.SupportsDDJB}\t{gate.SupportsCFFT}\t{gate.SupportsLWTT}");
+                Console.WriteLine($"{gate.gateName,-16}{gate.SupportsDDJB, -23}{gate.SupportsCFFT, -23}{gate.SupportsLWTT, -23}"); // 28jan: edited formatting
             }
 
 
@@ -486,46 +529,121 @@ namespace PRG2_T05_Flight
                     Console.WriteLine($"An error occurred! {e.Message}");
                 }
             }
+        }
 
+        // works
+        static List<string> ListOutFlightSupport(BoardingGate boarding_gate)
+        {
+            List<string> list_of_flight_support = new List<string>
+            {
+                boarding_gate.SupportsDDJB ? "DDJB" : "NORM",
+                boarding_gate.SupportsCFFT ? "CFFT" : "NORM",
+                boarding_gate.SupportsLWTT ? "LWTT" : "NORM"
+            };
+            return list_of_flight_support;
         }
 
         // 28jan: advanced feature (a)
-        static void ProcessUnassignedFlights(Dictionary<string, BoardingGate> boarding_gate_dict, Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict, Queue<Flight> unassigned_flight)
+        static void ProcessUnassignedFlights(Dictionary<string, BoardingGate> boarding_gate_dict, Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict)
         {
             Console.WriteLine("=============================================\r\nProcessing Unassigned Flights for Changi Airport Terminal 5\r\n=============================================");
             
             // check if each boardinggate has an assigned flight, if it has null assignedflight, add it to a queue
             //Queue<BoardingGate> unassigned_queue = new Queue<BoardingGate>();
-            List<Flight> assigned_flights = new List<Flight>();
 
+            //List<Flight> assigned_flights = new List<Flight>();
+            //List<string> available_boarding_gates = new List<string>();
 
+            Dictionary<string, List<string>> vacant_boarding_gates = new Dictionary<string, List<string>>();
 
-            foreach (var boarding_gate in boarding_gate_dict.Values)
+            Queue<Flight> unassigned_flight = new Queue<Flight>();
+            double manually_assigned_flights = 0;
+
+            foreach (var flight in flight_dict.Values)
             {
-                if (boarding_gate.AssignedFlight == null)
+                // returns flight_no, gate_name
+                List<string>? assigned_flight = CheckFlightAssignment(flight.FlightNumber, boarding_gate_dict);
+                //Console.WriteLine(assigned_flight.Count);
+                if (assigned_flight == null)
                 {
-                    unassigned_flight.Enqueue();
-                    Console.WriteLine("haha");
+                    unassigned_flight.Enqueue(flight);
+
+                    // leaving this here for debugging
+                    //Console.WriteLine($"Flight {flight.FlightNumber} is not assigned to any boarding gate");
+                    //Console.WriteLine($"Flight {flight.FlightNumber} has been added to queue");
 
                 }
                 else
                 {
-                    assigned_flights.Add(boarding_gate.AssignedFlight);
-                    //Console.WriteLine($"Gate {boarding_gate.gateName} is assigned to flight {boarding_gate.AssignedFlight.FlightNumber}"); // leaving this here for debugging
-                    // to get this output, assign a flight in option 3
+                    // leaving this here for debugging
+                    //Console.WriteLine($"Flight {assigned_flight[0]} is assigned to boarding gate {assigned_flight[1]}");
+                    //Console.WriteLine($"Flight {assigned_flight[0]} is not added to queue");
+                    manually_assigned_flights++;
+                }
+            }
+            Console.WriteLine($"There are {unassigned_flight.Count} unassigned flights");
+
+            int num_unassigned_boarding_gates = 0;
+
+            foreach (var boarding_gate in  boarding_gate_dict.Values)
+            {
+                if (boarding_gate.AssignedFlight == null) // check if boarding gate is vacant
+                { 
+                    num_unassigned_boarding_gates++;
+                    vacant_boarding_gates[boarding_gate.gateName] = ListOutFlightSupport(boarding_gate); // if the list contains all 3 values of "NORM", reserve it for NORMFLight
                 }
             }
 
-            Console.WriteLine("Unassigned Flights:");
-            foreach (var flight in flight_dict.Values)
+            Console.WriteLine($"There are {num_unassigned_boarding_gates} unassigned boarding gates\n");
+
+            double automatically_assigned_flights = 0;
+            Console.WriteLine($"{"Flight Number",-16}{"Airline Name",-23}{"Origin",-23}{"Destination",-23}{"Expected Departure/ Arrival Time",-36}{"Special Request Code",-16}{"Assigned Boarding Gate",-23}");
+            // replace foreach loop with while to safely dequeue
+            //foreach (var flight in unassigned_flight)
+            while (unassigned_flight.Count > 0)
             {
-                if (!assigned_flights.Contains(flight))
+                //string special_request_code = flight.GetType().Name.Substring(0, 4); // old code
+                var flight = unassigned_flight.Dequeue(); // new code
+                string special_request_code = flight.GetType().Name.Substring(0, 4);
+                //Console.WriteLine(flight.GetType().Name); // for debugging
+
+                // works
+                foreach (string gate_name in vacant_boarding_gates.Keys)
                 {
-                    string assigned_boarding_gate = "Unassigned";
-                    Console.WriteLine($"{flight.FlightNumber,-16}{GetAirlineName(airline_dict, flight.FlightNumber),-23}{flight.Origin,-23}{flight.Destination,-23}{flight.ExpectedTime,-36}{"Scheduled",-16}{assigned_boarding_gate,-13}");
-                
+                    // assign flights that are not NORM
+                    // if flight is not NORM and all 3 values in the list of the supported flights in the gate is not "NORM", meaning the list contains at least DDJB, CFFT or LWTT
+                    if (special_request_code != "NORM" && vacant_boarding_gates[gate_name].Contains(special_request_code))
+                    {
+
+                        // if a flight is supported in a flight, flight is assigned to the gate name in boarding_gate_dict
+                        //boarding_gate_dict[gate_name].AssignedFlight = flight; // old code
+                        boarding_gate_dict[gate_name].AssignedFlight = flight; // new code
+                        vacant_boarding_gates.Remove(gate_name); // once a flight is already assigned to a gate, remove the gate from vacant_boarding_gates
+                        //unassigned_flight.Dequeue();
+                        automatically_assigned_flights++;
+                        Console.WriteLine($"{flight.FlightNumber,-16}{GetAirlineName(airline_dict, flight.FlightNumber),-23}{flight.Origin,-23}{flight.Destination,-23}{flight.ExpectedTime,-36}{special_request_code,-16}{gate_name,-23}");
+                        //Console.WriteLine($"Flight {flight.FlightNumber} with code {special_request_code} has been assigned to gate {gate_name} --1"); // for debugging
+                        break; // break the loop once a flight is already assigned to move on to the next flight to be assigned
+                        
+                    }
+                    else if (special_request_code == "NORM" && vacant_boarding_gates[gate_name].All(item => item == "NORM")) // if gate support list contains all NORM, assign NORM flights to this gate
+                    {
+                        //boarding_gate_dict[gate_name].AssignedFlight = flight;
+                        boarding_gate_dict[gate_name].AssignedFlight = flight;
+                        vacant_boarding_gates.Remove(gate_name); // once a flight is already assigned to a gate, remove the gate from vacant_boarding_gates
+                        //unassigned_flight.Dequeue();
+                        automatically_assigned_flights++;
+                        Console.WriteLine($"{flight.FlightNumber,-16}{GetAirlineName(airline_dict, flight.FlightNumber),-23}{flight.Origin,-23}{flight.Destination,-23}{flight.ExpectedTime,-36}{special_request_code,-16}{gate_name,-23}");
+                        //Console.WriteLine($"Flight {flight.FlightNumber} with code {special_request_code} has been assigned to gate {gate_name} --2"); // for debugging
+                        break; // break the loop once a flight is already assigned to move on to the next flight to be assigned
+                    }
                 }
             }
+
+            //Console.WriteLine($"manual: {manually_assigned_flights}, auto: {automatically_assigned_flights}");
+            double total_assigned_flights = manually_assigned_flights + automatically_assigned_flights;
+            double percentage_of_processed_flights = (automatically_assigned_flights / total_assigned_flights) * 100;
+            Console.WriteLine($"There is a total of {automatically_assigned_flights} processed flights and boarding gates.\n{percentage_of_processed_flights}% were automatically generated.");
         }
 
         static void DisplayAirlineFees() // 28 jan: advanced feature (b) for ym
@@ -533,7 +651,7 @@ namespace PRG2_T05_Flight
 
         }
 
-        static void DisplayMenu(Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict, Dictionary<string, BoardingGate> boarding_gate_dict, Queue<Flight> unassigned_flight)
+        static void DisplayMenu(Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict, Dictionary<string, BoardingGate> boarding_gate_dict)
         {
             bool exit_command = false;
             while (!exit_command)
@@ -569,10 +687,10 @@ namespace PRG2_T05_Flight
                             ModifyFlightDetails(flight_dict, airline_dict);
                             break;
                         case 7:
-                            DIsplayFlightSchedule(flight_dict, airline_dict, boarding_gate_dict);
+                            DisplayFlightSchedule(flight_dict, airline_dict, boarding_gate_dict);
                             break;
                         case 8:
-                            ProcessUnassignedFlights(boarding_gate_dict, flight_dict, airline_dict, unassigned_flight);
+                            ProcessUnassignedFlights(boarding_gate_dict, flight_dict, airline_dict);
                             break;
                         case 9:
                             DisplayAirlineFees();
