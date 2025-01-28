@@ -261,6 +261,9 @@ namespace PRG2_T05_Flight
             {
                 Console.WriteLine($"{flight.FlightNumber,-16}{GetAirlineName(airline_dict, flight.FlightNumber),-23}{flight.Origin,-23}{flight.Destination,-23}{flight.ExpectedTime,-31}");
             }
+
+            // edit 28 jan: do i need to display flights by expected time? basic feature doesnt explicitly mention it
+            // sample output shows output displays the flights according to the original order in flights.csv
         }
 
         static string GetAirlineName(Dictionary<string, Airline> airline_dict, string airline_code)
@@ -281,8 +284,9 @@ namespace PRG2_T05_Flight
             {
                 try
                 {
+                    // 28 jan update: added .ToUpper() for flight_no and special_request_code
                     Console.Write("Enter Flight Number: ");
-                    string flight_no = Console.ReadLine();
+                    string flight_no = Console.ReadLine().ToUpper();
                     Console.WriteLine("Enter Origin: ");
                     string origin = Console.ReadLine();
                     Console.WriteLine("Enter Destination: ");
@@ -290,7 +294,7 @@ namespace PRG2_T05_Flight
                     Console.WriteLine("Enter Expected Departure/Arrival Time(dd/mm/yyyy hh:mm): ");
                     DateTime expected_time = DateTime.Parse(Console.ReadLine());
                     Console.WriteLine("Enter Special Request Code(CFFT/DDJB/LWTT/None): ");
-                    string special_request_code = Console.ReadLine();
+                    string special_request_code = Console.ReadLine().ToUpper();
 
                     string status = GetStatus(special_request_code);
                     if (special_request_code == "LWTT")
@@ -401,69 +405,87 @@ namespace PRG2_T05_Flight
         // FEATURE 8: Modify Flight Details (Original Implementation)
         static void ModifyFlightDetails(Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict)
         {
-            Console.WriteLine("=============================================\r\nList of Airlines for Changi Airport Terminal 5\r\n=============================================");
-            foreach (var airline in airline_dict.Values)
+            while (true) // 28 jan: added while true in case user gives a wrong input, will be redirected to enter the input again
             {
-                Console.WriteLine($"{airline.Code} - {airline.Name}");
-            }
+                try
+                {
+                    Console.WriteLine("=============================================\r\nList of Airlines for Changi Airport Terminal 5\r\n=============================================");
+                    foreach (var airline in airline_dict.Values)
+                    {
+                        Console.WriteLine($"{airline.Code} - {airline.Name}");
+                    }
 
-            Console.Write("Enter Airline Code: ");
-            string code = Console.ReadLine().ToUpper();
+                    Console.Write("Enter Airline Code: ");
+                    string code = Console.ReadLine().ToUpper();
 
-            if (!airline_dict.ContainsKey(code))
-            {
-                Console.WriteLine("Invalid Airline Code!");
-                return;
-            }
+                    if (!airline_dict.ContainsKey(code))
+                    {
+                        Console.WriteLine("Invalid Airline Code!");
+                        //return; -> old code (28 jan)
+                        continue;
 
-            var airlineFlights = flight_dict.Values
-                .Where(f => f.FlightNumber.StartsWith(code))
-                .ToList();
+                    }
 
-            Console.WriteLine("=============================================");
-            foreach (var flight in airlineFlights)
-            {
-                Console.WriteLine($"{flight.FlightNumber} - {flight.Origin} to {flight.Destination}");
-            }
+                    var airlineFlights = flight_dict.Values
+                        .Where(f => f.FlightNumber.StartsWith(code))
+                        .ToList();
 
-            Console.Write("Enter Flight Number: ");
-            string flightNumber = Console.ReadLine().ToUpper();
+                    Console.WriteLine("=============================================");
+                    foreach (var flight in airlineFlights)
+                    {
+                        Console.WriteLine($"{flight.FlightNumber} - {flight.Origin} to {flight.Destination}");
+                    }
 
-            if (!flight_dict.ContainsKey(flightNumber))
-            {
-                Console.WriteLine("Flight not found!");
-                return;
-            }
+                    Console.Write("Enter Flight Number: ");
+                    string flightNumber = Console.ReadLine().ToUpper();
 
-            Console.WriteLine("1. Modify Flight\n2. Delete Flight");
-            Console.Write("Choose option: ");
-            int option = int.Parse(Console.ReadLine());
+                    if (!flight_dict.ContainsKey(flightNumber))
+                    {
+                        Console.WriteLine("Flight not found!");
+                        //return; -> old code
+                        continue; // 28 jan updated code
+                    }
 
-            switch (option)
-            {
-                case 1:
-                    Console.Write("New Origin: ");
-                    string newOrigin = Console.ReadLine();
-                    Console.Write("New Destination: ");
-                    string newDest = Console.ReadLine();
-                    Console.Write("New Expected Time (dd/MM/yyyy HH:mm): ");
-                    DateTime newTime = DateTime.Parse(Console.ReadLine());
+                    Console.WriteLine("1. Modify Flight\n2. Delete Flight");
+                    Console.Write("Choose option: ");
+                    int option = int.Parse(Console.ReadLine());
 
-                    flight_dict[flightNumber].Origin = newOrigin;
-                    flight_dict[flightNumber].Destination = newDest;
-                    flight_dict[flightNumber].ExpectedTime = newTime;
-                    Console.WriteLine("Flight updated successfully!");
-                    break;
+                    switch (option)
+                    {
+                        case 1:
+                            Console.Write("New Origin: ");
+                            string newOrigin = Console.ReadLine();
+                            Console.Write("New Destination: ");
+                            string newDest = Console.ReadLine();
+                            Console.Write("New Expected Time (dd/MM/yyyy HH:mm): ");
+                            DateTime newTime = DateTime.Parse(Console.ReadLine());
 
-                case 2:
-                    flight_dict.Remove(flightNumber);
-                    Console.WriteLine("Flight deleted successfully!");
-                    break;
+                            flight_dict[flightNumber].Origin = newOrigin;
+                            flight_dict[flightNumber].Destination = newDest;
+                            flight_dict[flightNumber].ExpectedTime = newTime;
+                            Console.WriteLine("Flight updated successfully!");
+                            break;
 
-                default:
-                    Console.WriteLine("Invalid option!");
-                    break;
-            }
+                        case 2:
+                            flight_dict.Remove(flightNumber);
+                            Console.WriteLine("Flight deleted successfully!");
+                            break;
+
+                        default:
+                            Console.WriteLine("Invalid option!");
+                            break;
+                    }
+                }
+                catch (FormatException e)
+                {
+                    Console.WriteLine($"Please enter an appropriate input!");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"An error occurred! {e.Message}");
+                }
+            } 
+
         }
 
         static void DisplayMenu(Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict, Dictionary<string, BoardingGate> boarding_gate_dict)
