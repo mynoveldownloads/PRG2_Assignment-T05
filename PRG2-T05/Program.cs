@@ -19,10 +19,11 @@ namespace PRG2_T05_Flight
             Dictionary<string, Flight> flight_dict = new Dictionary<string, Flight>();
             Dictionary<string, Airline> airline_dict = new Dictionary<string, Airline>();
             Dictionary<string, BoardingGate> boarding_gate_dict = new Dictionary<string, BoardingGate>();
+            Queue<BoardingGate> unassigned_queue = new Queue<BoardingGate> (); // 28jan: added unassigned_queue for advanced feature (a)
             LoadAirlinesCSV(airline_dict);
             LoadBoardingGatesCSV(boarding_gate_dict);
             LoadFlightsCSV(flight_dict);
-            DisplayMenu(flight_dict, airline_dict, boarding_gate_dict);
+            DisplayMenu(flight_dict, airline_dict, boarding_gate_dict, unassigned_queue); // 28 jan: added unassigned_queue
         }
 
         /// <summary>
@@ -407,7 +408,7 @@ namespace PRG2_T05_Flight
         {
             while (true) // 28 jan: added while true in case user gives a wrong input, will be redirected to enter the input again
             {
-                try
+                try // 28 jan: added user input handling
                 {
                     Console.WriteLine("=============================================\r\nList of Airlines for Changi Airport Terminal 5\r\n=============================================");
                     foreach (var airline in airline_dict.Values)
@@ -488,7 +489,14 @@ namespace PRG2_T05_Flight
 
         }
 
-        static void DisplayMenu(Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict, Dictionary<string, BoardingGate> boarding_gate_dict)
+        // 28jan: advanced feature (a)
+        static void ProcessUnassignedFlights(Dictionary<string, BoardingGate> boarding_gate_dict, Dictionary<string, Flight> flight_dict, Queue<BoardingGate> unassigned_queue)
+        {
+            // check if each boardinggate has an assigned flight, if it has null assignedflight, add it to a queue
+            //Queue<BoardingGate> unassigned_queue = new Queue<BoardingGate>();
+        }
+
+        static void DisplayMenu(Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict, Dictionary<string, BoardingGate> boarding_gate_dict, Queue<BoardingGate> unassigned_queue)
         {
             bool exit_command = false;
             while (!exit_command)
