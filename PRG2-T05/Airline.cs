@@ -44,7 +44,14 @@ public class Airline
         {
             totalFees += flight.CalculateFees();
         }
-        return totalFees;
+
+        // Add discount calculations here if needed
+        return totalFees - CalculateDiscounts();
+    }
+
+    private double CalculateDiscounts()
+    {
+        // Implement discount logic based on flights
     }
 
     public override string ToString()
