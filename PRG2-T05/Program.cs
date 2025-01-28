@@ -19,11 +19,11 @@ namespace PRG2_T05_Flight
             Dictionary<string, Flight> flight_dict = new Dictionary<string, Flight>();
             Dictionary<string, Airline> airline_dict = new Dictionary<string, Airline>();
             Dictionary<string, BoardingGate> boarding_gate_dict = new Dictionary<string, BoardingGate>();
-            Queue<BoardingGate> unassigned_queue = new Queue<BoardingGate>(); // 28jan: added unassigned_queue for advanced feature (a)
+            Queue<Flight> unassigned_flight = new Queue<Flight>(); // 28jan: added unassigned_queue for advanced feature (a)
             LoadAirlinesCSV(airline_dict);
             LoadBoardingGatesCSV(boarding_gate_dict);
             LoadFlightsCSV(flight_dict);
-            DisplayMenu(flight_dict, airline_dict, boarding_gate_dict, unassigned_queue); // 28 jan: added unassigned_queue
+            DisplayMenu(flight_dict, airline_dict, boarding_gate_dict, unassigned_flight); // 28 jan: added unassigned_queue
         }
 
         /// <summary>
@@ -490,18 +490,21 @@ namespace PRG2_T05_Flight
         }
 
         // 28jan: advanced feature (a)
-        static void ProcessUnassignedFlights(Dictionary<string, BoardingGate> boarding_gate_dict, Dictionary<string, Flight> flight_dict, Queue<BoardingGate> unassigned_queue)
+        static void ProcessUnassignedFlights(Dictionary<string, BoardingGate> boarding_gate_dict, Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict, Queue<Flight> unassigned_flight)
         {
-            Console.WriteLine("method triggered");
+            Console.WriteLine("=============================================\r\nProcessing Unassigned Flights for Changi Airport Terminal 5\r\n=============================================");
+            
             // check if each boardinggate has an assigned flight, if it has null assignedflight, add it to a queue
             //Queue<BoardingGate> unassigned_queue = new Queue<BoardingGate>();
             List<Flight> assigned_flights = new List<Flight>();
+
+
 
             foreach (var boarding_gate in boarding_gate_dict.Values)
             {
                 if (boarding_gate.AssignedFlight == null)
                 {
-                    unassigned_queue.Enqueue(boarding_gate);
+                    unassigned_flight.Enqueue();
                     Console.WriteLine("haha");
 
                 }
@@ -513,13 +516,14 @@ namespace PRG2_T05_Flight
                 }
             }
 
+            Console.WriteLine("Unassigned Flights:");
             foreach (var flight in flight_dict.Values)
             {
-                // display flights not assigned to a boardinggate
-                //Console.WriteLine($"{}");
                 if (!assigned_flights.Contains(flight))
                 {
-                    Console.WriteLine($"{flight.ToString()}");
+                    string assigned_boarding_gate = "Unassigned";
+                    Console.WriteLine($"{flight.FlightNumber,-16}{GetAirlineName(airline_dict, flight.FlightNumber),-23}{flight.Origin,-23}{flight.Destination,-23}{flight.ExpectedTime,-36}{"Scheduled",-16}{assigned_boarding_gate,-13}");
+                
                 }
             }
         }
@@ -529,7 +533,7 @@ namespace PRG2_T05_Flight
 
         }
 
-        static void DisplayMenu(Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict, Dictionary<string, BoardingGate> boarding_gate_dict, Queue<BoardingGate> unassigned_queue)
+        static void DisplayMenu(Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict, Dictionary<string, BoardingGate> boarding_gate_dict, Queue<Flight> unassigned_flight)
         {
             bool exit_command = false;
             while (!exit_command)
@@ -568,8 +572,7 @@ namespace PRG2_T05_Flight
                             DIsplayFlightSchedule(flight_dict, airline_dict, boarding_gate_dict);
                             break;
                         case 8:
-                            Console.WriteLine("nig"); // works, method issue
-                            ProcessUnassignedFlights(boarding_gate_dict, flight_dict, unassigned_queue);
+                            ProcessUnassignedFlights(boarding_gate_dict, flight_dict, airline_dict, unassigned_flight);
                             break;
                         case 9:
                             DisplayAirlineFees();
