@@ -42,8 +42,16 @@ public class Terminal
     // Feature 7: 
     public Airline GetAirlineFromFlight(Flight flight)
     {
-        string code = flight.FlightNumber.Substring(0, 2);
-        return Airlines.ContainsKey(code) ? Airlines[code] : null;
+        string code = flight.FlightNumber.Substring(0, 2); // flight number e.g. SQ 115, airline code is SQ -> extract the first 2 letters in flight number
+        if (flight == null || !Airlines.ContainsKey(code)) // if flight is null or dictionary does not contain the key, return nothing
+        {
+            return null;
+        }
+        else
+        {
+            Airline airline = Airlines[code];
+            return airline;
+        }
     }
 
     public void PrintAirlines()

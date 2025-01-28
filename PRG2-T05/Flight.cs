@@ -1,42 +1,65 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PRG2_T05_Flight
+﻿public abstract class Flight : IComparable<Flight>
 {
-    public abstract class Flight : IComparable<Flight>
+    public string FlightNumber { get; set; }
+    public string Origin { get; set; }
+    public string Destination { get; set; }
+    public DateTime ExpectedTime { get; set; }
+    public string? Status { get; set; } = null; // edited this code for feature 5
+    public bool BoardingGateAssigned { get; set; } = false; // New property for gate validation
+    public string? SpecialRequestCode { get; set; } = null; // For additional fee logic
+
+    public Flight(string flight_no, string origin, string destination, DateTime expected_time, string status)
     {
-        public string FlightNumber { get; set; }
-        public string Origin { get; set; }
-        public string Destination { get; set; }
-        public DateTime ExpectedTime { get; set; }
-        public string? Status { get; set; } = null; // edited this code for feature 5
+        FlightNumber = flight_no;
+        Origin = origin;
+        Destination = destination;
+        ExpectedTime = expected_time;
+        Status = status;
+    }
 
-        public Flight(string flight_no, string origin, string destination, DateTime expected_time, string status)
+    public override string ToString()
+    {
+        return $"Flight number: {FlightNumber}, Origin: {Origin}, Destination: {Destination}, Expected time: {ExpectedTime}, Status: {Status}";
+    }
+
+    public virtual double CalculateFees()
+    {
+        double fee = 300; // Base fee
+
+        // Apply fee based on origin/destination
+        if (Origin == "SIN" || Destination == "SIN")
         {
-            FlightNumber = flight_no;
-            Origin = origin;
-            Destination = destination;
-            ExpectedTime = expected_time;
-            Status = status;
+            fee += 800;
+        }
+        else
+        {
+            fee += 500;
         }
 
-        public override string ToString()
+        // Apply additional fees for special requests
+        if (!string.IsNullOrEmpty(SpecialRequestCode))
         {
-            return base.ToString();
+            // Example: Use SpecialRequestCode to determine additional fee
+            fee += GetSpecialRequestFee(SpecialRequestCode);
         }
 
-        public virtual double CalculateFees()
-        {
-            return 300;
-        }
+        return fee;
+    }
 
-        public int CompareTo(Flight other)
-        {
-            if (other == null) return 1;
-            return this.ExpectedTime.CompareTo(other.ExpectedTime);
-        }
+    protected virtual double GetSpecialRequestFee(string requestCode)
+    {
+        // Placeholder for additional fee logic
+        return 0;
+    }
+
+    public bool ValidateBoardingGate()
+    {
+        return BoardingGateAssigned;
+    }
+
+    public int CompareTo(Flight other)
+    {
+        if (other == null) return 1;
+        return this.ExpectedTime.CompareTo(other.ExpectedTime);
     }
 }
