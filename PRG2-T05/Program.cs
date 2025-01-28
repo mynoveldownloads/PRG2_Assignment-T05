@@ -494,6 +494,19 @@ namespace PRG2_T05_Flight
         {
             // check if each boardinggate has an assigned flight, if it has null assignedflight, add it to a queue
             //Queue<BoardingGate> unassigned_queue = new Queue<BoardingGate>();
+            foreach (var boarding_gate in  boarding_gate_dict.Values)
+            {
+                if (boarding_gate.AssignedFlight == null)
+                {
+                    unassigned_queue.Enqueue(boarding_gate);
+                    Console.WriteLine($"");
+                }
+            }
+        }
+
+        static void DisplayAirlineFees() // 28 jan: advanced feature (b) for ym
+        {
+
         }
 
         static void DisplayMenu(Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict, Dictionary<string, BoardingGate> boarding_gate_dict, Queue<BoardingGate> unassigned_queue)
@@ -503,7 +516,7 @@ namespace PRG2_T05_Flight
             {
                 try
                 {
-                    Console.WriteLine("=============================================\r\nWelcome to Changi Airport Terminal 5\r\n=============================================\r\n1. List All Flights\r\n2. List Boarding Gates\r\n3. Assign a Boarding Gate to a Flight\r\n4. Create Flight\r\n5. Display Airline Flights\r\n6. Modify Flight Details\r\n7. Display Flight Schedule\r\n0. Exit");
+                    Console.WriteLine("=============================================\r\nWelcome to Changi Airport Terminal 5\r\n=============================================\r\n1. List All Flights\r\n2. List Boarding Gates\r\n3. Assign a Boarding Gate to a Flight\r\n4. Create Flight\r\n5. Display Airline Flights\r\n6. Modify Flight Details\r\n7. Display Flight Schedule\r\n8. Process Unassigned Flights\n9. Display AIrline Fees\n0. Exit");
                     Console.WriteLine("Please select your option:");
                     int choice = int.Parse(Console.ReadLine());
 
@@ -533,6 +546,12 @@ namespace PRG2_T05_Flight
                             break;
                         case 7:
                             DIsplayFlightSchedule(flight_dict, airline_dict, boarding_gate_dict);
+                            break;
+                        case 8:
+                            ProcessUnassignedFlights(boarding_gate_dict, flight_dict, unassigned_queue);
+                            break;
+                        case 9:
+                            DisplayAirlineFees();
                             break;
                         default:
                             Console.WriteLine("Please enter the values listed in the menu");
