@@ -7,6 +7,7 @@
 
 // Airline.cs
 using PRG2_T05_Flight;
+using PRG2_T05_NORMFlight;
 using System;
 using System.Collections.Generic;
 
@@ -39,20 +40,19 @@ public class Airline
 
     public double CalculateFees()
     {
-        double totalFees = 0;
+        double subtotal = 0;
         foreach (var flight in Flights.Values)
         {
-            totalFees += flight.CalculateFees();
+            subtotal += flight.CalculateFees(); // Uses Flight's CalculateFees()
         }
-
-        // Add discount calculations here if needed
-        return totalFees - CalculateDiscounts();
+        return subtotal; // Subtotal before discounts
     }
 
-    private double CalculateDiscounts()
-    {
-        // Implement discount logic based on flights
-    }
+
+    
+
+
+
 
     public override string ToString()
     {

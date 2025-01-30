@@ -12,19 +12,7 @@ namespace PRG2_T05_NORMFlight
 
         public override double CalculateFees()
         {
-            double fee = base.CalculateFees(); // Base fee starts at $300
-
-            // Add fees based on origin/destination
-            if (Origin == "SIN")
-            {
-                fee += 800; // Departing from Singapore
-            }
-            else if (Destination == "SIN")
-            {
-                fee += 500; // Arriving in Singapore
-            }
-
-            return fee; // No additional request fees for normal flights
+            return base.CalculateFees(); // No special request fee
         }
 
         public override string ToString()

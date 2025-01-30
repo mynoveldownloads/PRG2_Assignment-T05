@@ -1,67 +1,60 @@
-﻿public abstract class Flight : IComparable<Flight>
+﻿//==========================================================
+// Student Number	: S10259207E
+// Student Name	: Raphael Adesta Pratidina
+// Partner Name	: Yeaw Min Lee
+//==========================================================
+
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace PRG2_T05_Flight
 {
-    public string FlightNumber { get; set; }
-    public string Origin { get; set; }
-    public string Destination { get; set; }
-    public DateTime ExpectedTime { get; set; }
-    public string? Status { get; set; } = null; // edited this code for feature 5
-    public bool BoardingGateAssigned { get; set; } = false; // New property for gate validation
-    public string? SpecialRequestCode { get; set; } = null; // For additional fee logic
-
-    public Flight(string flight_no, string origin, string destination, DateTime expected_time, string status)
+    public abstract class Flight : IComparable<Flight>
     {
-        FlightNumber = flight_no;
-        Origin = origin;
-        Destination = destination;
-        ExpectedTime = expected_time;
-        Status = status;
-    }
+        public string FlightNumber { get; set; }
+        public string Origin { get; set; }
+        public string Destination { get; set; }
+        public DateTime ExpectedTime { get; set; }
+        public string? Status { get; set; } = null; // edited this code for feature 5 and LoadFlightsCSV, the csv does not have status, so leave it as null by default
 
-    public override string ToString()
-    {
-        return $"Flight number: {FlightNumber}, Origin: {Origin}, Destination: {Destination}, Expected time: {ExpectedTime}, Status: {Status}";
-    }
-
-    public virtual double CalculateFees()
-    {
-        double fee = 300; // Base fee
-
-        // Apply fee based on origin/destination
-        if (Origin == "SIN" || Destination == "SIN")
+        public Flight(string flight_no, string origin, string destination, DateTime expected_time, string status)
         {
-            fee += 800;
-        }
-        else
-        {
-            fee += 500;
+            FlightNumber = flight_no;
+            Origin = origin;
+            Destination = destination;
+            ExpectedTime = expected_time;
+            Status = status;
         }
 
-        // Apply additional fees for special requests
-        if (!string.IsNullOrEmpty(SpecialRequestCode))
+        public override string ToString()
         {
-            // Example: Use SpecialRequestCode to determine additional fee
-            fee += GetSpecialRequestFee(SpecialRequestCode);
+            return $"Flight number: {FlightNumber}, Origin: {Origin}, Destination: {Destination}, Expected time: {ExpectedTime}, Status: {Status}";
         }
 
-        return fee;
-    }
+        public virtual double CalculateFees()
+        {
+            double fee = 300; // Boarding gate base fee
 
-    protected virtual double GetSpecialRequestFee(string requestCode)
-    {
-        // Placeholder for additional fee logic
-        return 0;
-    }
+            // Add arrival/departure fee
+            if (Destination == "SIN")
+                fee += 500; // Arriving flight
+            else if (Origin == "SIN")
+                fee += 800; // Departing flight
 
-    public bool ValidateBoardingGate()
-    {
-        return BoardingGateAssigned;
-    }
+            return fee;
+        }   
 
-    public int CompareTo(Flight other)
-    {
-        if (other == null) return 1;
-        return this.ExpectedTime.CompareTo(other.ExpectedTime);
+
+        public int CompareTo(Flight other)
+        {
+            if (other == null) return 1;
+            return this.ExpectedTime.CompareTo(other.ExpectedTime);
+        }
+
+
     }
 }
-
-

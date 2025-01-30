@@ -27,12 +27,7 @@ namespace PRG2_T05_CFFTFlight
 
         public override double CalculateFees()
         {
-            double fee = base.CalculateFees(); // Start with base fees ($300 + origin/destination)
-
-            // Add CFFT-specific request fee
-            fee += RequestFee;
-
-            return fee;
+            return base.CalculateFees() + RequestFee; // Adds CFFT fee (150)
         }
     }
 }

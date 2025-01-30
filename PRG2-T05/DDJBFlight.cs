@@ -27,12 +27,7 @@ namespace PRG2_T05_DDJBFlight
 
         public override double CalculateFees()
         {
-            double fee = base.CalculateFees(); // Base fees: $300 + origin/destination
-
-            // Add DDJB-specific request fee
-            fee += RequestFee;
-
-            return fee;
+            return base.CalculateFees() + RequestFee; // Adds DDJB fee (300)
         }
     }
 }
