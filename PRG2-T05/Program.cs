@@ -612,7 +612,12 @@ namespace PRG2_T05_Flight
             Console.WriteLine($"There are {num_unassigned_boarding_gates} unassigned boarding gates\n");
 
             double automatically_assigned_flights = 0;
-            Console.WriteLine($"{"Flight Number",-16}{"Airline Name",-23}{"Origin",-23}{"Destination",-23}{"Expected Departure/ Arrival Time",-36}{"Special Request Code",-16}{"Assigned Boarding Gate",-23}");
+
+            if (automatically_assigned_flights != 0)
+            {
+
+                Console.WriteLine($"{"Flight Number",-16}{"Airline Name",-23}{"Origin",-23}{"Destination",-23}{"Expected Departure/ Arrival Time",-36}{"Special Request Code",-16}{"Assigned Boarding Gate",-23}");
+            }
             // replace foreach loop with while to safely dequeue
             //foreach (var flight in unassigned_flight)
             while (unassigned_flight.Count > 0)
