@@ -330,6 +330,12 @@ namespace PRG2_T05_Flight
                     // 28 jan update: added .ToUpper() for flight_no and special_request_code
                     Console.Write("Enter Flight Number: ");
                     string flight_no = Console.ReadLine().ToUpper();
+
+                    if (flight_dict.ContainsKey(flight_no))
+                    {
+                        Console.WriteLine($"Flight {flight_no} already exists in flight list! enter a new flight."); continue;
+                    }
+
                     Console.WriteLine("Enter Origin: ");
                     string origin = Console.ReadLine();
                     Console.WriteLine("Enter Destination: ");
@@ -339,7 +345,7 @@ namespace PRG2_T05_Flight
                     Console.WriteLine("Enter Special Request Code(CFFT/DDJB/LWTT/None): ");
                     string special_request_code = Console.ReadLine().ToUpper();
 
-                    string status = GetStatus(special_request_code);
+                    string? status = null;
                     if (special_request_code == "LWTT")
                     {
                         LWTTFlight new_flight = new LWTTFlight(flight_no, origin, destination, expected_time, status);
@@ -354,6 +360,15 @@ namespace PRG2_T05_Flight
                     {
                         CFFTFlight new_flight = new CFFTFlight(flight_no, origin, destination, expected_time, status);
                         flight_dict[flight_no] = new_flight;
+                    }
+                    else if (special_request_code == "NONE")
+                    {
+                        NORMFlight new_flight = new NORMFlight(flight_no, origin, destination, expected_time, status);
+                        flight_dict[flight_no] = new_flight;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Please enter the given request codes only!"); continue;
                     }
 
                     try
@@ -371,7 +386,7 @@ namespace PRG2_T05_Flight
                     Console.WriteLine($"Flight {flight_no} has been added!");
                     Console.WriteLine("Would you like to add another flight? (Y/N)");
                     string choice = Console.ReadLine();
-                    if (choice == "N") exit_method = true;
+                    if (choice == "N") exit_method = true; break;
                 }
                 catch (FormatException e)
                 {
