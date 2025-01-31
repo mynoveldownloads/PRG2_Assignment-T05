@@ -22,6 +22,8 @@ namespace PRG2_T05_Flight
             Dictionary<string, double> gate_fees = new Dictionary<string, double>();
             gate_fees["Changi Airport Terminal 5"] = 300;
 
+         
+
             // Create Terminal
             Terminal terminal = new Terminal("Changi Airport Terminal 5", airline_dict, flight_dict, gate_fees, boarding_gate_dict);
 
