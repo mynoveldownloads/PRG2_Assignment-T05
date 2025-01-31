@@ -19,21 +19,22 @@ namespace PRG2_T05_Flight
             Dictionary<string, Flight> flight_dict = new Dictionary<string, Flight>();
             Dictionary<string, Airline> airline_dict = new Dictionary<string, Airline>();
             Dictionary<string, BoardingGate> boarding_gate_dict = new Dictionary<string, BoardingGate>();
+            Dictionary<string, double> gate_fees = new Dictionary<string, double>();
+            gate_fees["Changi Airport Terminal 5"] = 300;
+
+            // Create Terminal
+            Terminal terminal = new Terminal("Changi Airport Terminal 5", airline_dict, flight_dict, gate_fees, boarding_gate_dict);
+
+            // Load CSV Data
             LoadAirlinesCSV(airline_dict);
             LoadBoardingGatesCSV(boarding_gate_dict);
-            LoadFlightsCSV(flight_dict);
+            LoadFlightsCSV(flight_dict, airline_dict, terminal);
 
-
-            // Create Terminal instance and link data
-            Terminal terminal = new Terminal("Terminal 5");
-            foreach (var airline in airline_dict.Values)
-                terminal.Airlines.Add(airline.Code, airline); // Add airlines to terminal
-            foreach (var gate in boarding_gate_dict.Values)
-                terminal.BoardingGates.Add(gate.gateName, gate); // Add boarding gates to terminal
-
-
-            DisplayMenu(flight_dict, airline_dict, boarding_gate_dict, terminal); // 28 jan: added unassigned_queue
+            // Pass Everything to Menu
+            DisplayMenu(flight_dict, airline_dict, boarding_gate_dict, terminal);
         }
+
+
 
         /// <summary>
         /// Loads airlines from a CSV file and adds them to a dictionary.
@@ -46,11 +47,13 @@ namespace PRG2_T05_Flight
             {
                 Console.WriteLine("Loading Airlines...");
                 var data = File.ReadAllLines("airlines.csv");
+
                 for (int i = 1; i < data.Length; i++)
                 {
                     string[] splitData = data[i].Split(",");
                     string airlineName = splitData[0];
                     string airlineCode = splitData[1];
+
                     Airline airline = new Airline(name: airlineName, code: airlineCode);
                     airline_dict[airlineCode] = airline;
                 }
@@ -73,15 +76,16 @@ namespace PRG2_T05_Flight
             {
                 Console.WriteLine("Loading Boarding Gates...");
                 var data = File.ReadAllLines("boardinggates.csv");
+
                 for (int i = 1; i < data.Length; i++)
                 {
                     string[] dataSplit = data[i].Split(",");
                     string gateName = dataSplit[0];
 
-                    // 28 jan: edited bool parsing (swap indexing DDJB and CFFT)
                     bool supportsDDJB = bool.Parse(dataSplit[1]);
                     bool supportsCFFT = bool.Parse(dataSplit[2]);
                     bool supportsLWTT = bool.Parse(dataSplit[3]);
+
                     BoardingGate gate = new BoardingGate(gateName, supportsCFFT, supportsDDJB, supportsLWTT);
                     boarding_gate_dict[gateName] = gate;
                 }
@@ -259,10 +263,11 @@ namespace PRG2_T05_Flight
             }
         }
 
-        static void LoadFlightsCSV(Dictionary<string, Flight> flight_dict)
+        static void LoadFlightsCSV(Dictionary<string, Flight> flight_dict, Dictionary<string, Airline> airline_dict, Terminal terminal)
         {
             Console.WriteLine("Loading Flights...");
             string[] file = File.ReadAllLines("flights.csv");
+
             for (int i = 1; i < file.Length; i++)
             {
                 string[] split_text = file[i].Split(",");
@@ -271,33 +276,46 @@ namespace PRG2_T05_Flight
                 string destination = split_text[2];
                 DateTime expected_time = DateTime.Parse(split_text[3]);
                 string special_request_code = split_text[4];
-                //string status = GetStatus(special_request_code); // old code, status does not translate to special request code
-                string? status = null;
 
+                // Extract airline code from flight number
+                string airline_code = flight_no.Substring(0, 2);
+
+                // Ensure airline exists before assigning flight
+                if (!airline_dict.ContainsKey(airline_code))
+                {
+                    Console.WriteLine($"Warning: Airline {airline_code} not found for flight {flight_no}. Skipping...");
+                    continue;
+                }
+
+                Flight flight;
                 if (special_request_code == "LWTT")
                 {
-                    LWTTFlight new_flight = new LWTTFlight(flight_no, origin, destination, expected_time, status);
-                    flight_dict[flight_no] = new_flight;
+                    flight = new LWTTFlight(flight_no, origin, destination, expected_time, "Delayed");
                 }
                 else if (special_request_code == "DDJB")
                 {
-                    DDJBFlight new_flight = new DDJBFlight(flight_no, origin, destination, expected_time, status);
-                    flight_dict[flight_no] = new_flight;
+                    flight = new DDJBFlight(flight_no, origin, destination, expected_time, "On Time");
                 }
                 else if (special_request_code == "CFFT")
                 {
-                    CFFTFlight new_flight = new CFFTFlight(flight_no, origin, destination, expected_time, status);
-                    flight_dict[flight_no] = new_flight;
+                    flight = new CFFTFlight(flight_no, origin, destination, expected_time, "Boarding");
                 }
                 else
                 {
-                    NORMFlight new_flight = new NORMFlight(flight_no, origin, destination, expected_time, status);
-                    flight_dict[flight_no] = new_flight;
+                    flight = new NORMFlight(flight_no, origin, destination, expected_time, "Scheduled");
                 }
+
+                // Add flight to the flight dictionary
+                flight_dict[flight_no] = flight;
+
+                // Add flight to its respective airline using AddFlight
+                airline_dict[airline_code].AddFlight(flight);
+
+                // Also add flight to Terminal (optional, useful for centralization)
+                terminal.Flights[flight_no] = flight;
             }
             Console.WriteLine($"{flight_dict.Count} Flights Loaded!");
         }
-
         static string? GetStatus(string special_request_code)
         {
             if (special_request_code == "LWTT") return "Delay";
@@ -668,24 +686,28 @@ namespace PRG2_T05_Flight
             {
                 try
                 {
-                    Console.WriteLine("=============================================\r\nWelcome to Changi Airport Terminal 5\r\n=============================================" +"\r\n" +
-                        "1. List All Flights\r\n" +
-                        "2. List Boarding Gates\r\n" +
-                        "3. Assign a Boarding Gate to a Flight\r\n" +
-                        "4. Create Flight\r\n" +
-                        "5. Display Airline Flights\r\n" +
-                        "6. Modify Flight Details\r\n" +
-                        "7. Display Flight Schedule\r\n" +
-                        "8. Process Unassigned Flights\n" +
-                        "9. Display Airline Fees\n0. Exit");
-                    Console.WriteLine("Please select your option:");
+                    Console.WriteLine("\n=============================================");
+                    Console.WriteLine("Welcome to Changi Airport Terminal 5");
+                    Console.WriteLine("=============================================");
+                    Console.WriteLine("1. List All Flights");
+                    Console.WriteLine("2. List Boarding Gates");
+                    Console.WriteLine("3. Assign a Boarding Gate to a Flight");
+                    Console.WriteLine("4. Create Flight");
+                    Console.WriteLine("5. Display Airline Flights");
+                    Console.WriteLine("6. Modify Flight Details");
+                    Console.WriteLine("7. Display Flight Schedule");
+                    Console.WriteLine("8. Process Unassigned Flights");
+                    Console.WriteLine("9. Display Airline Fees");
+                    Console.WriteLine("0. Exit");
+                    Console.Write("Please select your option: ");
+
                     int choice = int.Parse(Console.ReadLine());
 
                     switch (choice)
                     {
                         case 0:
                             exit_command = true;
-                            Console.WriteLine("Goodbye");
+                            Console.WriteLine("Goodbye!");
                             break;
                         case 1:
                             ListAllFlights(flight_dict, airline_dict);
@@ -712,19 +734,18 @@ namespace PRG2_T05_Flight
                             ProcessUnassignedFlights(boarding_gate_dict, flight_dict, airline_dict);
                             break;
                         case 9:
-                            terminal.PrintAirlineFees(); // Call the method from Terminal.cs
+                            terminal.PrintAirlineFees();
                             break;
                         default:
-                            Console.WriteLine("Please enter the values listed in the menu");
+                            Console.WriteLine("Please enter a valid option.");
                             break;
                     }
                 }
-                catch (FormatException e)
+                catch (FormatException)
                 {
-                    Console.WriteLine("Please enter an appropriate number!");
+                    Console.WriteLine("Please enter a valid number.");
                 }
             }
         }
-
     }
 }
