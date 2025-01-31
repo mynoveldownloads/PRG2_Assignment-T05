@@ -319,9 +319,9 @@ namespace PRG2_T05_Flight
             // sample output shows output displays the flights according to the original order in flights.csv
         }
 
-        static string GetAirlineName(Dictionary<string, Airline> airline_dict, string airline_code)
+        static string GetAirlineName(Dictionary<string, Airline> airline_dict, string flightNumber)
         {
-            string code = airline_code.Substring(0, 2);
+            string code = flightNumber.Substring(0, 2).Trim(); // Correct extraction
             return airline_dict[code].Name;
         }
 
