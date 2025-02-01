@@ -15,13 +15,13 @@ namespace PRG2_T05_Flight
 {
     public abstract class Flight : IComparable<Flight>
     {
-        public string FlightNumber {  get; set; }
+        public string FlightNumber { get; set; }
         public string Origin { get; set; }
         public string Destination { get; set; }
         public DateTime ExpectedTime { get; set; }
         public string? Status { get; set; } = null; // edited this code for feature 5 and LoadFlightsCSV, the csv does not have status, so leave it as null by default
 
-        public Flight (string flight_no, string origin, string destination, DateTime expected_time, string status)
+        public Flight(string flight_no, string origin, string destination, DateTime expected_time, string status)
         {
             FlightNumber = flight_no;
             Origin = origin;
@@ -37,13 +37,24 @@ namespace PRG2_T05_Flight
 
         public virtual double CalculateFees()
         {
-            return 300;
+            double fee = 300; // Boarding gate base fee
+
+            // Add arrival/departure fee
+            if (Destination == "SIN")
+                fee += 500; // Arriving flight
+            else if (Origin == "SIN")
+                fee += 800; // Departing flight
+
+            return fee;
         }
+
 
         public int CompareTo(Flight other)
         {
             if (other == null) return 1;
             return this.ExpectedTime.CompareTo(other.ExpectedTime);
         }
+
+
     }
 }
